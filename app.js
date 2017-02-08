@@ -1,0 +1,44 @@
+var express = require('express');
+var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
+var app = express();
+
+app.set('port', (process.env.PORT || 5000));
+
+app.use(express.static(__dirname + '/public'));
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
+
+// Set mongo URL
+var url = 'mongodb://localhost:27017/nextm17';
+
+app.get('/', function(req, res, next) {
+    res.render('index.html');
+});
+
+app.post('/drinks', function(req, res, next) {
+    var data = req.body;
+
+    console.log(data);
+
+    MongoClient.connect(url).then(function (db) {
+        drinks = db.collection('coffee');
+
+        drinks.find(data).toArray(function(error, result) {
+            console.log(result);
+            res.send(result);
+        });
+
+    }).catch(function (error) {
+        console.log(error);
+        console.log('Could not connect');
+    });
+});
+
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
+
