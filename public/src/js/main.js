@@ -29,6 +29,7 @@ var question_data = [
 
 $(document).ready(function () {
     startJoe();
+
 });
 
 
@@ -42,6 +43,11 @@ function startJoe() {
 
     $('body').on('click', '.first-answer', function(e) {
         $('.first-answer').addClass('elimination-answer').removeClass('first-answer');
+        var text = $(this).text();
+        var a_clone = $('.chat-answer-template').clone();
+        a_clone.text(text);
+        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+        $('.conversation-container').append(a_clone);
         if(e.target.id === 'positive-answer') {
             var chosenDrink = {};
             finishJoe(chosenDrink);
@@ -66,6 +72,11 @@ function eliminationRound() {
 
     $('.elimination-answer').off('click');
     $('.elimination-answer').on('click', function(e) {
+        var text = $(this).text();
+        var a_clone = $('.chat-answer-template').clone();
+        a_clone.text(text);
+        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+        $('.conversation-container').append(a_clone);
 
         var answer;
 
@@ -132,13 +143,21 @@ function getFirst() {
  *
  */
 function insertQuestion(data) {
-    var clone = $('.qa-container-template').clone();
-    clone.find('#joe-question').text(data.phrase);
-    clone.find('#positive-answer').text(data.positive_answer);
-    clone.find('#negative-answer').text(data.negative_answer);
-    clone.removeClass('qa-container-template').addClass('qa-container');
-    $('.conversation-container').append(clone);
-    $('html, body').animate({ scrollTop: $(document).height() }, 200);
+
+    var q_clone = $('.chat-question-template').clone();
+    q_clone.text(data.phrase);
+    q_clone.removeClass('chat-question-template').addClass('chat-question');
+    $('.conversation-container').append(q_clone);
+
+    $('.answer-option#positive-answer').text(data.positive_answer);
+    $('.answer-option#negative-answer').text(data.negative_answer);
+
+
+    // clone.find('#positive-answer').text(data.positive_answer);
+    // clone.find('#negative-answer').text(data.negative_answer);
+    // clone.removeClass('qa-container-template').addClass('qa-container');
+    // $('.conversation-container').append(clone);
+    // $('html, body').animate({ scrollTop: $(document).height() }, 200);
 }
 
 /*
