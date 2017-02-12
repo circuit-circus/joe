@@ -1,0 +1,47 @@
+{
+    "name" : "Skånerost",
+    "size" : 2,
+    "strenght" : 2,
+    "milk" : 0,
+    "milk_froth" : 0
+}
+
+{
+    "name" : "Café au Lait",
+    "size" : 2,
+    "strenght" : 1,
+    "milk" : 1,
+    "milk_froth" : 1
+}
+
+{
+    "name" : "Americano",
+    "size" : 2,
+    "strenght" : 1,
+    "milk" : 0,
+    "milk_froth" : 0
+}
+
+{
+    "name" : "Cappuccino",
+    "size" : 2,
+    "strenght" : 1,
+    "milk" : 1,
+    "milk_froth" : 2
+}
+
+{
+    "name" : "Espresso",
+    "size" : 1,
+    "strenght" : 2,
+    "milk" : 0,
+    "milk_froth" : 0
+}
+
+{
+    "name" : "Cortardo Espresso Macchiato",
+    "size" : 1,
+    "strenght" : 1,
+    "milk" : 1,
+    "milk_froth" : 1
+}
