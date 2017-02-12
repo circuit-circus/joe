@@ -1,0 +1,95 @@
+@import '_base';
+
+html {
+    background: #000;
+    font-size: 14px;
+}
+
+body {
+    color: #fff;
+}
+
+main {
+    font-family: $normalfont;
+}
+
+.chat-container {
+    position: absolute;
+    width: 100%
+}
+
+.chat-container-template {
+    display: none;
+}
+
+.chat {
+    position: relative;
+}
+
+$arrowsize: 5px;
+.chat:not(.options)::after {
+    border-bottom: $arrowsize solid transparent;
+    border-top: $arrowsize solid transparent;
+    content: '';
+    display: block;
+    height: 0;
+    opacity: 1;
+    position: absolute;
+    width: 0;
+}
+
+.chat.inactive:not(.options)::after {
+    //opacity: 0;
+}
+
+.chat__right::after {
+    border-left: $arrowsize solid #fff;
+    transition: opacity 500ms;
+    right: -#{$arrowsize};
+    top: 50%;
+}
+
+.chat__left::after {
+    border-right: 5px solid #fff;
+    left: -#{$arrowsize};
+    transition: opacity 500ms;
+    top: 50%;
+}
+
+.inactive .chat__inner {
+    opacity: 0;
+}
+
+.chat__inner {
+    border: 2px solid #fff;
+    border-radius: 3px;
+    display: inline-block;
+    opacity: 1;
+    padding: 1rem;
+    transition: opacity 500ms;
+    max-width: 25vw;
+}
+
+.chat__left {
+    margin: 0 auto 1rem 1rem;
+}
+
+.chat__right {
+    margin: 0 1rem 0 auto;
+    text-align: right;
+}
+
+.inactive .option {
+    opacity: 0;
+}
+
+.option {
+    border: 2px dotted #fff;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0 .5rem;
+    opacity: 1;
+    padding: 1rem;
+    transition: opacity 500ms;
+    max-width: 25vw;
+}
