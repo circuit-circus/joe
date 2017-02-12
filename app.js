@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 // Set mongo URL
-var url = 'mongodb://localhost:27017/nextm17';
+var url = 'mongodb://localhost:27017/nextM17';
 
 app.get('/', function(req, res, next) {
     res.render('index.html');

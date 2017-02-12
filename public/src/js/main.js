@@ -1,3 +1,7 @@
+var joe_container;
+var positive_answer_container;
+var negative_answer_container;
+
 var bannedDrinkArray = [];
 var availableDrinkArray = [];
 
@@ -28,6 +32,11 @@ var question_data = [
 ];
 
 $(document).ready(function () {
+
+    joe_container = $('.joe');
+    positive_answer_container = $('#positive-answer');
+    negative_answer_container = $('#negative-answer');
+
     startJoe();
 });
 
@@ -69,10 +78,10 @@ function eliminationRound() {
 
         var answer;
 
-        if(e.target.className === 'positive-answer') {
+        if(e.target.id === 'positive-answer') {
             answer = 'pos';
         }
-        if(e.target.className === 'negative-answer') {
+        if(e.target.id === 'negative-answer') {
             answer = 'neg';
         }
 
@@ -132,12 +141,9 @@ function getFirst() {
  *
  */
 function insertQuestion(data) {
-    var new_chat_container = $('.chat-container-template').clone();
-    new_chat_container.find('#joe-text').text(data.phrase).attr('data-drink-name', data.drink_name).attr('data-drink-id', data.drink_id);
-    new_chat_container.find('#positive-answer').text(data.positive_answer);
-    new_chat_container.find('#negative-answer').text(data.negative_answer);
-    new_chat_container.removeClass('chat-container-template');
-    $('main').append(new_chat_container);
+    joe_container.text(data.phrase).attr('data-drink-name', data.drink_name).attr('data-drink-id', data.drink_id);
+    positive_answer_container.text(data.positive_answer);
+    negative_answer_container.text(data.negative_answer);
 }
 
 /*
@@ -158,6 +164,8 @@ function checkDrinkAvailability(callback) {
  */
 function finishJoe(chosenDrink) {
     joe_container.text('Great! Here\'s your ' + chosenDrink.name);
+    positive_answer_container.hide();
+    negative_answer_container.hide();
     // Send dispense command
 }
 
