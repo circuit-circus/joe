@@ -1,7 +1,3 @@
-var joe_container;
-var positive_answer_container;
-var negative_answer_container;
-
 var bannedDrinkArray = [];
 var availableDrinkArray = [];
 
@@ -32,11 +28,6 @@ var question_data = [
 ];
 
 $(document).ready(function () {
-
-    joe_container = $('.joe');
-    positive_answer_container = $('#positive-answer');
-    negative_answer_container = $('#negative-answer');
-
     startJoe();
 });
 
@@ -141,9 +132,13 @@ function getFirst() {
  *
  */
 function insertQuestion(data) {
-    joe_container.text(data.phrase).attr('data-drink-name', data.drink_name).attr('data-drink-id', data.drink_id);
-    positive_answer_container.text(data.positive_answer);
-    negative_answer_container.text(data.negative_answer);
+    var clone = $('.qa-container-template').clone();
+    clone.find('#joe-question').text(data.phrase);
+    clone.find('#positive-answer').text(data.positive_answer);
+    clone.find('#negative-answer').text(data.negative_answer);
+    clone.removeClass('qa-container-template').addClass('qa-container');
+    $('.conversation-container').append(clone);
+    $('html, body').animate({ scrollTop: $(document).height() }, 200);
 }
 
 /*
@@ -163,15 +158,16 @@ function checkDrinkAvailability(callback) {
  *
  */
 function finishJoe(chosenDrink) {
-    joe_container.text('Great! Here\'s your ' + chosenDrink.name);
-    positive_answer_container.hide();
-    negative_answer_container.hide();
-    // Send dispense command
+    var test = $('<div id="joe-question" class="chat-buble"></div>');
+    test.text('Great! Here\'s your ' + chosenDrink.name);
+    $('.conversation-container').append(test);
+        $('html, body').animate({ scrollTop: $(document).height() }, 500);
+
 }
 
 /*
  * Send to route
- *goit
+ *
  */
 function sendToPath(method, path, data, progress, done) {
 

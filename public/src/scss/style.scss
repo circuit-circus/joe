@@ -1,7 +1,11 @@
 @import '_base';
 
+* {
+    box-sizing: border-box;
+}
+
 html {
-    background: #000;
+    background: #171717;
     font-size: 14px;
 }
 
@@ -12,6 +16,58 @@ body {
 main {
     font-family: $normalfont;
 }
+
+.qa-container-template {
+    display: none;
+}
+
+.conversation-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+}
+
+.qa-container {
+    margin: 2rem 0;
+    display: inline-block;
+    width: 100%;
+}
+
+.chat-buble {
+    padding: 2rem;
+    vertical-align: top;
+    border-radius: 5px;
+}
+
+#joe-question {
+    background-color: #fff;
+    color: #171717;
+    margin-bottom: 2rem;
+    //width: 100%;
+    font-size: 18px;
+
+}
+
+.joe-answer {
+    width: 35%;
+    display: inline-block;
+    cursor: pointer;
+    border: 2px solid #fff;
+    float: left;
+}
+
+.joe-answer:last-of-type {
+    float: right;
+}
+
+
+/* ------------------------------ */
+
+
+
+
 
 .chat-container {
     position: absolute;
