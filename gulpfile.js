@@ -4,6 +4,11 @@ var prefix = require('gulp-autoprefixer');
 var minify = require('gulp-minify-css');
 var minifyjs = require('gulp-minify');
 var notify = require('gulp-notify');
+var livereload = require('gulp-livereload');
+var lr = require('tiny-lr');
+var server = lr();
+
+var port = 35729;
 
 // Compile sass and move it
 gulp.task('minify-css', function() {
@@ -13,6 +18,7 @@ gulp.task('minify-css', function() {
         )
         .pipe(prefix('last 5 versions'))
         .pipe(minify())
+        .pipe(livereload(server))
         .pipe(gulp.dest('public/css/'))
 });
 
@@ -30,6 +36,7 @@ gulp.task('compress-js', function() {
 
 //Watch task
 gulp.task('default',function() {
+    livereload.listen();
     gulp.start('minify-css');
     gulp.start('compress-js');
     gulp.watch('public/src/scss/**/*.scss',['minify-css']);
