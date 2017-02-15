@@ -49,8 +49,7 @@ function startJoe() {
         a_clone.removeClass('chat-answer-template').addClass('chat-answer');
         $('.conversation-container').append(a_clone);
         if(e.target.id === 'positive-answer') {
-            var chosenDrink = {};
-            finishJoe(chosenDrink);
+            finishJoe(first);
         }
         if(e.target.id === 'negative-answer') {
             eliminationRound();
@@ -129,8 +128,8 @@ function eliminationRound() {
 function getFirst() {
     var first = {
         "phrase" : "Goodmorning! How about an Espresso to kickstart your day?",
-        "drink_id" : "589b134671f90d703a4cf695",
-        "drink_name" : "Espresso",
+        "_id" : "589b134671f90d703a4cf695",
+        "name" : "Espresso",
         "positive_answer" : "Yeah, that sounds great. Hit me, Joe!",
         "negative_answer" : "No thanks, I'm in the mood for something different"
     }
@@ -152,12 +151,8 @@ function insertQuestion(data) {
     $('.answer-option#positive-answer').text(data.positive_answer);
     $('.answer-option#negative-answer').text(data.negative_answer);
 
+    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
 
-    // clone.find('#positive-answer').text(data.positive_answer);
-    // clone.find('#negative-answer').text(data.negative_answer);
-    // clone.removeClass('qa-container-template').addClass('qa-container');
-    // $('.conversation-container').append(clone);
-    // $('html, body').animate({ scrollTop: $(document).height() }, 200);
 }
 
 /*
@@ -177,11 +172,12 @@ function checkDrinkAvailability(callback) {
  *
  */
 function finishJoe(chosenDrink) {
-    var test = $('<div id="joe-question" class="chat-buble"></div>');
-    test.text('Great! Here\'s your ' + chosenDrink.name);
-    $('.conversation-container').append(test);
-        $('html, body').animate({ scrollTop: $(document).height() }, 500);
-
+    console.log(chosenDrink);
+    var joeFinish = $('<div class="chat-question chat-buble"></div>');
+    joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
+    $('.conversation-container').append(joeFinish);
+    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
+    $('.answer-container').hide();
 }
 
 /*

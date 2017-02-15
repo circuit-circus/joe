@@ -31,13 +31,13 @@ main {
 .conversation-container {
     width: 100%;
     height: 80vh;
-    overflow-y: scroll;
     margin: 0 auto;
     padding: 2rem 0;
     position: relative;
     display: flex;
     //justify-content: space-between;
     flex-direction: column;
+    overflow: hidden;
 
     .chat-question-template, .chat-answer-template {
         display: none;
@@ -83,6 +83,7 @@ main {
 .answer-container {
     width: 100%;
     height: 10vh;
+    margin: 8vh 0 2vh;
     display: flex;
     justify-content: space-between;
 
