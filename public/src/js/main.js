@@ -137,20 +137,24 @@ function getFirst() {
     var currentTime = new Date().getHours();
 
     if(currentTime >= 6 && currentTime < 11) {
-        greetings = ['Goodmorning VISITOR!', 'Hi VISITOR, hope you\'re having a great morning!'];
+        greetings = ['Goodmorning[VISITOR]!', 'Hi[VISITOR], hope you\'re having a great morning!'];
     } else if(currentTime >= 11 && currentTime < 14) {
-        greetings = ['Hi there VISITOR!', 'Hello VISITOR, how are you?', 'VISITOR! So nice to see you!'];
+        greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR], how are you?', 'Hi[VISITOR]! So nice to see you.'];
     } else if (currentTime >= 14 && currentTime < 17) {
-        greetings = ['Goodafternoon VISITOR!', 'Hi VISITOR, so nice to see you this afternoon'];
+        greetings = ['Goodafternoon[VISITOR]!', 'Hi[VISITOR], so nice to see you this afternoon'];
     } else if (currentTime >= 17 && currentTime < 22) {
-        greetings = ['Goodevening VISITOR!', 'Goodevening VISITOR, hope you\'re doing fine this lovely evening', 'Hi VISITOR, in the mood for an evening coffee?'];
+        greetings = ['Goodevening[VISITOR]!', 'Goodevening[VISITOR], hope you\'re doing fine this lovely evening', 'Hi[VISITOR], in the mood for an evening coffee?'];
     } else {
-        greetings = ['Hi there VISITOR!', 'Hello VISITOR!'];
+        greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR]!'];
     }
 
+    var chosen_greeting = greetings[Math.floor(Math.random()*greetings.length)];
+    // IF THERE'S A RFID, GET THE NAME
+    var visitor_name = 'Nina';
+    chosen_greeting = chosen_greeting.replace('[VISITOR]', visitor_name.length ? ' ' + visitor_name : '');
 
     var first = {
-        'phrase' : greetings[Math.floor(Math.random()*greetings.length)] + ' How about an Espresso to kickstart your day?',
+        'phrase' : chosen_greeting + ' How about an Espresso to kickstart your day?',
         '_id' : '589b134671f90d703a4cf695',
         'name' : 'Espresso',
         'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
