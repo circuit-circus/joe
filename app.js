@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var yrno = require('yr.no-forecast');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
@@ -37,6 +38,21 @@ app.post('/drinks', function(req, res, next) {
         console.log('Could not connect');
     });
 });
+
+app.post('/weather', function(req, res, next) {
+
+    var currTime = new Date();
+    yrno.getWeather({
+        lat: req.body.latitude,
+        lon: req.body.longitude
+    }, function(err, location) {
+        location.getForecastForTime(currTime, function(err, result) {
+            console.log(result);
+        });
+    });
+});
+
+
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));

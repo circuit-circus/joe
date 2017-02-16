@@ -3,6 +3,11 @@ var availableDrinkArray = [];
 
 var counter = 0;
 
+var COPENHAGEN_LOC = {
+    'latitude' : 55.67594,
+    'longitude' : 12.56553
+}
+
 var choices = {};
 var question_data = [
     {
@@ -126,6 +131,7 @@ function eliminationRound() {
  *
  */
 function getFirst() {
+
     var first = {
         "phrase" : "Goodmorning! How about an Espresso to kickstart your day?",
         "_id" : "589b134671f90d703a4cf695",
@@ -133,6 +139,12 @@ function getFirst() {
         "positive_answer" : "Yeah, that sounds great. Hit me, Joe!",
         "negative_answer" : "No thanks, I'm in the mood for something different"
     }
+
+    var location_data = COPENHAGEN_LOC;
+
+    sendToPath('post', '/weather', location_data, function (error, response) {
+        console.log(response);
+    });
 
     return first;
 }
