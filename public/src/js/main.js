@@ -185,7 +185,8 @@ function getFirst() {
         '_id' : '589b134671f90d703a4cf695',
         'name' : 'Espresso',
         'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
-        'negative_answer' : 'No thanks, I\'m in the mood for something different'
+        'negative_answer' : 'No thanks, I\'m in the mood for something different',
+        'dispenser_number' : 4
     }
 
     return first;
@@ -206,7 +207,6 @@ function insertQuestion(data) {
     $('.answer-option#negative-answer').text(data.negative_answer);
 
     $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
-
 }
 
 /*
@@ -249,6 +249,10 @@ function finishJoe(chosenDrink) {
     $('.conversation-container').append(joeFinish);
     $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
     $('.answer-container').hide();
+
+    sendToPath('post', '/dispense', chosenDrink, function (error, response) {
+        console.log(response);
+    });
 }
 
 /*

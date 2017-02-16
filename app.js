@@ -64,6 +64,13 @@ app.post('/drinks', function(req, res, next) {
     });
 });
 
+app.post('/dispense', function(req, res, next) {
+    var data = req.body;
+    var dispenser_number = data.dispenser_number.toString();
+
+    sp.write(dispenser_number);
+});
+
 app.post('/weather', function(req, res, next) {
 
     var currTime = new Date();
@@ -71,9 +78,11 @@ app.post('/weather', function(req, res, next) {
         lat: req.body.latitude,
         lon: req.body.longitude
     }, function(err, location) {
-        location.getForecastForTime(currTime, function(err, result) {
-            res.send(result);
-        });
+        if(!err && location !== null) {
+            location.getForecastForTime(currTime, function(err, result) {
+                res.send(result);
+            });
+        }
     });
 });
 
