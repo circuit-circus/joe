@@ -1,14 +1,17 @@
-var bannedDrinkArray = [];
-var availableDrinkArray = [];
+var socket = io(); // socket.io
 
-var counter = 0;
-
+// Location data
 var COPENHAGEN_LOC = {
     'latitude' : 55.67594,
     'longitude' : 12.56553
 }
 
+var bannedDrinkArray = [];
+var availableDrinkArray = [];
+
 var choices = {};
+
+var questionCounter = 0;
 var question_data = [
     {
         "phrase" : "Big or small?",
@@ -32,10 +35,21 @@ var question_data = [
     }
 ];
 
-$(document).ready(function () {
-    startJoe();
 
+$(document).ready(function () {
+
+    // Listen for button presses
+    socket.on('buttonPress', function (data) {
+        if(data === 'L') {
+            $('#positive-answer').click();
+        } else if (data === 'R') {
+            $('#negative-answer').click();
+        }
+    });
+
+    startJoe();
 });
+
 
 
 /*
@@ -67,11 +81,11 @@ function startJoe() {
  *
  */
 function eliminationRound() {
-    if(counter >= question_data.length) {
+    if(questionCounter >= question_data.length) {
         finishJoe();
         return;
     }
-    var question = question_data[counter];
+    var question = question_data[questionCounter];
     insertQuestion(question);
 
     $('.elimination-answer').off('click');
@@ -91,7 +105,7 @@ function eliminationRound() {
             answer = 'neg';
         }
 
-        switch(counter) {
+        switch(questionCounter) {
             case 0:
                 choices.size = answer === 'pos' ? {$in: [1]} : {$in: [2]};
                 break;
@@ -111,7 +125,7 @@ function eliminationRound() {
                 break;
         }
 
-        counter++;
+        questionCounter++;
 
         // If there's only one option left, that's the coffee
         checkDrinkAvailability(function(no_of_drinks) {

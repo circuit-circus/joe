@@ -1,10 +1,26 @@
 var express = require('express');
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
-var yrno = require('yr.no-forecast');
-var app = express();
 
+var yrno = require('yr.no-forecast');
+
+var serialport = require('serialport');
+var portName = '/dev/tty.usbmodem1411';
+var sp = new serialport.SerialPort(portName, {
+    baudRate: 9600,
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1,
+    flowControl: false,
+    parser: serialport.parsers.readline("\r\n")
+});
+
+/* SETUP */
 app.set('port', (process.env.PORT || 5000));
 
 app.use(express.static(__dirname + '/public'));
@@ -13,9 +29,18 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-// Set mongo URL
+/* Set mongo URL */
 var url = 'mongodb://localhost:27017/nextM17';
 
+
+/* SERIAL COM */
+io.on('connection', function(socket) {
+    sp.on('data', function(input) {
+        socket.emit('buttonPress', input);
+    });
+});
+
+/* ROUTES */
 app.get('/', function(req, res, next) {
     res.render('index.html');
 });
@@ -46,16 +71,13 @@ app.post('/weather', function(req, res, next) {
         lat: req.body.latitude,
         lon: req.body.longitude
     }, function(err, location) {
-        console.log(location);
         location.getForecastForTime(currTime, function(err, result) {
             res.send(result);
         });
     });
 });
 
-
-
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+http.listen(5000, function(){
+  console.log('listening on *:5000');
 });
 
