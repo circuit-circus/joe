@@ -46,8 +46,9 @@ app.post('/weather', function(req, res, next) {
         lat: req.body.latitude,
         lon: req.body.longitude
     }, function(err, location) {
+        console.log(location);
         location.getForecastForTime(currTime, function(err, result) {
-            console.log(result);
+            res.send(result);
         });
     });
 });

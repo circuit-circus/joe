@@ -152,9 +152,9 @@ function getFirst() {
 
     // Options if there's no visitor name
     var no_name_options = ['buddy', 'friend'];
-    // IF THERE'S A RFID, GET THE NAME
     var visitor_info = getVisitorInfo();
     var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)]
+    // Replace [VISITOR] with visitor name
     chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
 
 
@@ -208,19 +208,9 @@ function checkDrinkAvailability(callback) {
 }
 
 /*
- * Finish
+ * Get visitor info
  *
  */
-function finishJoe(chosenDrink) {
-    console.log(chosenDrink);
-    var joeFinish = $('<div class="chat-question chat-buble"></div>');
-    joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
-    $('.conversation-container').append(joeFinish);
-    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
-    $('.answer-container').hide();
-}
-
-
 function getVisitorInfo() {
     var visitor_info = {
         first_name : 'Nina',
@@ -232,6 +222,19 @@ function getVisitorInfo() {
     }
 
     return visitor_info;
+}
+
+/*
+ * Finish
+ *
+ */
+function finishJoe(chosenDrink) {
+    console.log(chosenDrink);
+    var joeFinish = $('<div class="chat-question chat-buble"></div>');
+    joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
+    $('.conversation-container').append(joeFinish);
+    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
+    $('.answer-container').hide();
 }
 
 /*
