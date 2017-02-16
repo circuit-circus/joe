@@ -132,40 +132,43 @@ function eliminationRound() {
  */
 function getFirst() {
 
-    // Construct greeting
-    var greetings = [];
+    // Construct welcome greeting
+    var welcome_greetings = [];
     var currentTime = new Date().getHours();
 
     if(currentTime >= 6 && currentTime < 11) {
-        greetings = ['Goodmorning[VISITOR]!', 'Hi[VISITOR], hope you\'re having a great morning!'];
+        welcome_greetings = ['Goodmorning[VISITOR]!', 'Hi[VISITOR], hope you\'re having a great morning!'];
     } else if(currentTime >= 11 && currentTime < 14) {
-        greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR], how are you?', 'Hi[VISITOR]! So nice to see you.'];
+        welcome_greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR], how are you?', 'Hi[VISITOR]! So nice to see you.', 'Welcome[VISITOR]!'];
     } else if (currentTime >= 14 && currentTime < 18) {
-        greetings = ['Goodafternoon[VISITOR]!', 'Hi[VISITOR], so nice to see you this afternoon.'];
+        welcome_greetings = ['Goodafternoon[VISITOR]!', 'Hi[VISITOR], so nice to see you this afternoon.'];
     } else if (currentTime >= 18 && currentTime < 23) {
-        greetings = ['Goodevening[VISITOR]!', 'Goodevening[VISITOR], hope you\'re doing fine this lovely evening', 'Hi[VISITOR], in the mood for an evening coffee?'];
+        welcome_greetings = ['Goodevening[VISITOR]!', 'Goodevening[VISITOR], hope you\'re doing fine this lovely evening', 'Hi[VISITOR], in the mood for an evening coffee?'];
     } else {
-        greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR]!'];
+        welcome_greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR]!'];
     }
 
-    var chosen_greeting = greetings[Math.floor(Math.random()*greetings.length)];
+    var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
     // IF THERE'S A RFID, GET THE NAME
     var visitor_name = 'Nina';
-    chosen_greeting = chosen_greeting.replace('[VISITOR]', visitor_name.length ? ' ' + visitor_name : '');
+    chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name.length ? ' ' + visitor_name : '');
 
-    var first = {
-        'phrase' : chosen_greeting + ' How about an Espresso?',
-        '_id' : '589b134671f90d703a4cf695',
-        'name' : 'Espresso',
-        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
-        'negative_answer' : 'No thanks, I\'m in the mood for something different'
-    }
 
+    // Get weather data
     var location_data = COPENHAGEN_LOC;
 
     sendToPath('post', '/weather', location_data, function (error, response) {
         console.log(response);
     });
+
+    // Construct first suggestion obj
+    var first = {
+        'phrase' : chosen_welcome_greeting + ' How about an Espresso?',
+        '_id' : '589b134671f90d703a4cf695',
+        'name' : 'Espresso',
+        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
+        'negative_answer' : 'No thanks, I\'m in the mood for something different'
+    }
 
     return first;
 }
