@@ -137,21 +137,25 @@ function getFirst() {
     var currentTime = new Date().getHours();
 
     if(currentTime >= 6 && currentTime < 11) {
-        welcome_greetings = ['Goodmorning[VISITOR]!', 'Hi[VISITOR], hope you\'re having a great morning!'];
+        welcome_greetings = ['Goodmorning [VISITOR]!', 'Hi [VISITOR], hope you\'re having a great morning!'];
     } else if(currentTime >= 11 && currentTime < 14) {
-        welcome_greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR], how are you?', 'Hi[VISITOR]! So nice to see you.', 'Welcome[VISITOR]!'];
+        welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR], how are you?', 'Hi [VISITOR]! So nice to see you.', 'Welcome [VISITOR]!'];
     } else if (currentTime >= 14 && currentTime < 18) {
-        welcome_greetings = ['Goodafternoon[VISITOR]!', 'Hi[VISITOR], so nice to see you this afternoon.'];
+        welcome_greetings = ['Goodafternoon [VISITOR]!', 'Hi [VISITOR], so nice to see you this afternoon.'];
     } else if (currentTime >= 18 && currentTime < 23) {
-        welcome_greetings = ['Goodevening[VISITOR]!', 'Goodevening[VISITOR], hope you\'re doing fine this lovely evening', 'Hi[VISITOR], in the mood for an evening coffee?'];
+        welcome_greetings = ['Goodevening [VISITOR]!', 'Goodevening [VISITOR], hope you\'re doing fine this lovely evening', 'Hi [VISITOR], in the mood for an evening coffee?'];
     } else {
-        welcome_greetings = ['Hi there[VISITOR]!', 'Hello[VISITOR]!'];
+        welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR]!'];
     }
 
     var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
+
+    // Options if there's no visitor name
+    var no_name_options = ['buddy', 'friend'];
     // IF THERE'S A RFID, GET THE NAME
-    var visitor_name = 'Nina';
-    chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name.length ? ' ' + visitor_name : '');
+    var visitor_info = getVisitorInfo();
+    var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)]
+    chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
 
 
     // Get weather data
@@ -214,6 +218,20 @@ function finishJoe(chosenDrink) {
     $('.conversation-container').append(joeFinish);
     $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
     $('.answer-container').hide();
+}
+
+
+function getVisitorInfo() {
+    var visitor_info = {
+        first_name : 'Nina',
+        last_name : 'Højholdt',
+        last_drink : {
+            drink_name : 'Espresso',
+            drink_id : '589b134671f90d703a4cf695'
+        }
+    }
+
+    return visitor_info;
 }
 
 /*
