@@ -132,12 +132,29 @@ function eliminationRound() {
  */
 function getFirst() {
 
+    // Construct greeting
+    var greetings = [];
+    var currentTime = new Date().getHours();
+
+    if(currentTime >= 6 && currentTime < 11) {
+        greetings = ['Goodmorning VISITOR!', 'Hi VISITOR, hope you\'re having a great morning!'];
+    } else if(currentTime >= 11 && currentTime < 14) {
+        greetings = ['Hi there VISITOR!', 'Hello VISITOR, how are you?', 'VISITOR! So nice to see you!'];
+    } else if (currentTime >= 14 && currentTime < 17) {
+        greetings = ['Goodafternoon VISITOR!', 'Hi VISITOR, so nice to see you this afternoon'];
+    } else if (currentTime >= 17 && currentTime < 22) {
+        greetings = ['Goodevening VISITOR!', 'Goodevening VISITOR, hope you\'re doing fine this lovely evening', 'Hi VISITOR, in the mood for an evening coffee?'];
+    } else {
+        greetings = ['Hi there VISITOR!', 'Hello VISITOR!'];
+    }
+
+
     var first = {
-        "phrase" : "Goodmorning! How about an Espresso to kickstart your day?",
-        "_id" : "589b134671f90d703a4cf695",
-        "name" : "Espresso",
-        "positive_answer" : "Yeah, that sounds great. Hit me, Joe!",
-        "negative_answer" : "No thanks, I'm in the mood for something different"
+        'phrase' : greetings[Math.floor(Math.random()*greetings.length)] + ' How about an Espresso to kickstart your day?',
+        '_id' : '589b134671f90d703a4cf695',
+        'name' : 'Espresso',
+        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
+        'negative_answer' : 'No thanks, I\'m in the mood for something different'
     }
 
     var location_data = COPENHAGEN_LOC;
