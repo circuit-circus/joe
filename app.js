@@ -9,35 +9,42 @@ var ObjectId = require('mongodb').ObjectID;
 
 var yrno = require('yr.no-forecast');
 
-var serialport = require('serialport');
-var portName = '/dev/tty.usbmodem1411';
-var sp = new serialport.SerialPort(portName, {
-    baudRate: 9600,
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1,
-    flowControl: false,
-    parser: serialport.parsers.readline("\r\n")
-});
-
 /* SETUP */
-app.set('port', (process.env.PORT || 5000));
-
 app.use(express.static(__dirname + '/public'));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-/* Set mongo URL */
+// MongoDB URL
 var url = 'mongodb://localhost:27017/nextM17';
 
 
 /* SERIAL COM */
+var serialport = require('serialport');
+var portName = '/dev/tty.usbmodem1411';
+// var sp = new serialport.SerialPort(portName, {
+//     baudRate: 9600,
+//     dataBits: 8,
+//     parity: 'none',
+//     stopBits: 1,
+//     flowControl: false,
+//     parser: serialport.parsers.readline("\r\n")
+// });
+var sp = new serialport(portName, function(err) {
+    if(err) {
+        console.log('No serial connection');
+        console.log('Error: ' + err);
+    }
+});
+
+// Listen for Arduino buttonpresses
 io.on('connection', function(socket) {
-    sp.on('data', function(input) {
-        socket.emit('buttonPress', input);
-    });
+    if(sp.isOpen()) {
+        sp.on('data', function(input) {
+            socket.emit('buttonPress', input);
+        });
+    }
 });
 
 /* ROUTES */
@@ -48,19 +55,21 @@ app.get('/', function(req, res, next) {
 app.post('/drinks', function(req, res, next) {
     var data = req.body;
 
-    console.log(data);
-
     MongoClient.connect(url).then(function (db) {
         drinks = db.collection('coffee');
 
-        drinks.find(data).toArray(function(error, result) {
-            console.log(result);
+        drinks.find(data).toArray(function(err, result) {
+            if(err) {
+                console.log('Could not find coffee in DB');
+                console.log('Error: ' + err);
+                return;
+            }
             res.send(result);
         });
 
-    }).catch(function (error) {
-        console.log(error);
-        console.log('Could not connect');
+    }).catch(function (err) {
+        console.log('Could not get drinks');
+        console.log('Error: ' + err);
     });
 });
 
@@ -68,7 +77,12 @@ app.post('/dispense', function(req, res, next) {
     var data = req.body;
     var dispenser_number = data.dispenser_number.toString();
 
-    sp.write(dispenser_number);
+    if(sp.isOpen()) {
+        sp.write(dispenser_number, function(err) {
+            console.log('Could not send dispenser signal');
+            console.log('Error: ' + err);
+        });
+    }
 });
 
 app.post('/weather', function(req, res, next) {
@@ -78,15 +92,25 @@ app.post('/weather', function(req, res, next) {
         lat: req.body.latitude,
         lon: req.body.longitude
     }, function(err, location) {
-        if(!err && location !== null) {
+        if(err) {
+            console.log('Could not get extended weather info for location');
+            console.log('Error: ' + err);
+            return;
+        }
+        if(location !== null) {
             location.getForecastForTime(currTime, function(err, result) {
+                if(err) {
+                    console.log('Could not get weather info for current time');
+                    console.log('Error: ' + err);
+                    return;
+                }
                 res.send(result);
             });
         }
     });
 });
 
-http.listen(5000, function(){
+http.listen(5000, function() {
   console.log('listening on *:5000');
 });
 
