@@ -95,7 +95,9 @@ function startJoe() {
         var first = getFirst();
         insertQuestion(first);
 
-        $('body').on('click', '.first-answer', function(e) {
+        $('body').on('click', '.first-answer', function() {
+            
+        }, function(e) {
             $('.first-answer').addClass('elimination-answer').removeClass('first-answer');
             var text = $(this).text();
             var a_clone = $('.chat-answer-template').clone();
@@ -108,8 +110,6 @@ function startJoe() {
             if(e.target.id === 'negative-answer') {
                 eliminationRound();
             }
-        }, function() {
-
         });
     });
 }
@@ -209,7 +209,6 @@ function getFirst() {
 
     var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
 
-    console.log(weather_data);
     if(shouldReactToWeather) {
         if(parseInt(weather_data.cloudiness) > 75) {
             weather_greetings = [
@@ -241,7 +240,7 @@ function getFirst() {
                 'In this windy weather, luckily getting a coffee is a breeze.'
             ];
         }
-        chosen_welcome_greeting += " " + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
+        chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
         console.log("React to weather");
     }
 
