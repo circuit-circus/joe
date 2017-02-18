@@ -22,7 +22,7 @@ var url = 'mongodb://localhost:27017/nextM17';
 
 /* SERIAL COM */
 var serialport = require('serialport');
-var portName = '/dev/tty.usbmodem1411';
+var sp;
 // var sp = new serialport.SerialPort(portName, {
 //     baudRate: 9600,
 //     dataBits: 8,
@@ -31,16 +31,38 @@ var portName = '/dev/tty.usbmodem1411';
 //     flowControl: false,
 //     parser: serialport.parsers.readline("\r\n")
 // });
-var sp = new serialport(portName, function(err) {
+/*var sp = new serialport(portName, function(err) {
     if(err) {
         console.log('No serial connection');
         console.log('Error: ' + err);
     }
+});*/
+serialport.list(function (err, ports) {
+    ports.forEach(function(port) {
+        if(port.comName.indexOf('.usbmodem') !== -1) {
+            console.log('Connecting to ' + port.comName);
+            sp = new serialport(port.comName, {
+                dataBits: 8,
+                parity: 'none',
+                stopBits: 1,
+                flowControl: false,
+                parser: serialport.parsers.readline("\r\n")
+            },
+            function(err) {
+                if(err) {
+                    console.log('Error: ' + err.message);
+                }
+                else {
+                    console.log('Port opened on ' + port.comName);
+                }
+            });
+        }
+    });
 });
 
 // Listen for Arduino buttonpresses
 io.on('connection', function(socket) {
-    if(sp.isOpen()) {
+    if(sp !== undefined && sp.isOpen()) {
         sp.on('data', function(input) {
             socket.emit('buttonPress', input);
         });
