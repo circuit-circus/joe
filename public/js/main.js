@@ -299,7 +299,17 @@ function insertQuestion(data) {
     $('.answer-option#positive-answer').text(data.positive_answer);
     $('.answer-option#negative-answer').text(data.negative_answer);
 
-    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
+    scrollConversation();
+}
+
+/*
+ * Utility function to scroll to the bottom chat
+ *
+ */
+function scrollConversation() {
+    var elem = $('.chat-buble').last();
+    var newScrollpos = Math.abs( ($('.conversation-container')[0].scrollHeight - elem.offset().top) + elem.height());
+    $('.conversation-container').animate({ scrollTop: newScrollpos }, 750);
 }
 
 /*
@@ -331,6 +341,10 @@ function getVisitorInfo() {
     return visitor_info;
 }
 
+/*
+ * Get confirmation about the chosen drink from the user
+ *
+ */
 function getConfirmation(chosenDrink) {
 
     // Construct first suggestion obj
@@ -378,7 +392,7 @@ function finishJoe(chosenDrink) {
     var joeFinish = $('<div class="chat-question chat-buble"></div>');
     joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
     $('.conversation-container').append(joeFinish);
-    $('.conversation-container').animate({ scrollTop: $(document).height() }, 750);
+    scrollConversation();
     $('.answer-container').hide();
 
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
