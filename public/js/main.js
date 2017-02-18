@@ -119,10 +119,10 @@ function startJoe() {
  *
  */
 function eliminationRound() {
-    if(questionCounter >= question_data.length) {
+    /*if(questionCounter >= question_data.length) {
         finishJoe();
         return;
-    }
+    }*/
     var question = question_data[questionCounter];
     insertQuestion(question);
 
@@ -170,7 +170,7 @@ function eliminationRound() {
             if(no_of_drinks > 1) {
                 eliminationRound();
             } else {
-                finishJoe(availableDrinkArray[0]);
+                getConfirmation(availableDrinkArray[0]);
             }
         });
 
@@ -187,14 +187,33 @@ function getFirst() {
     // Construct welcome greetings
     var welcome_greetings = [];
     var weather_greetings = [];
+    var drink_greetings = ['How about a hot cup of [DRINK]?', 'I recommend a nice cup of [DRINK]!'];
     var currentTime = date.getHours();
 
-    var shouldReactToWeather = false;
+    // Construct first suggestion obj
+    var first = {
+        'phrase' : 'How about an Espresso?',
+        '_id' : '589b134671f90d703a4cf695',
+        'name' : 'Espresso',
+        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
+        'negative_answer' : 'No thanks, I\'m in the mood for something different',
+        'dispenser_number' : 4
+    }
+
+    var chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
+
+    var shouldReactToWeather = false,
+        shouldTryToUseLastDrink = false;
     // Only react to weather sometimes and when we have weather data
     if(Math.random() < 0.2 && !jQuery.isEmptyObject(weather_data)) {
         shouldReactToWeather = true;
     }
+    // Only use last drink sometimes
+    else if(Math.random() < 0.6) {
+        shouldTryToUseLastDrink = true;
+    }
 
+    // Find the right time of day
     if(currentTime >= 6 && currentTime < 11) {
         welcome_greetings = ['Goodmorning [VISITOR]!', 'Hi [VISITOR], hope you\'re having a great morning!'];
     } else if(currentTime >= 11 && currentTime < 14) {
@@ -209,6 +228,12 @@ function getFirst() {
 
     var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
 
+    // Options if there's no visitor name
+    var no_name_options = ['buddy', 'friend'];
+    var visitor_info = getVisitorInfo();
+    var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
+
+    // Figure out how to talk about the weather
     if(shouldReactToWeather) {
         if(parseInt(weather_data.cloudiness) > 75) {
             weather_greetings = [
@@ -241,25 +266,21 @@ function getFirst() {
             ];
         }
         chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
-        console.log("React to weather");
     }
+    else if(shouldTryToUseLastDrink) {
+        if(visitor_info.last_drink !== undefined) {
+            first._id = visitor_info.last_drink.drink_id;
+            first.name = visitor_info.last_drink.drink_name;
+        }
+    }
+    // Replace [DRINK] with chosen start drink
+    chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', first.name);
 
-    // Options if there's no visitor name
-    var no_name_options = ['buddy', 'friend'];
-    var visitor_info = getVisitorInfo();
-    var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)]
     // Replace [VISITOR] with visitor name
     chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
 
-    // Construct first suggestion obj
-    var first = {
-        'phrase' : chosen_welcome_greeting + ' How about an Espresso?',
-        '_id' : '589b134671f90d703a4cf695',
-        'name' : 'Espresso',
-        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
-        'negative_answer' : 'No thanks, I\'m in the mood for something different',
-        'dispenser_number' : 4
-    }
+    // Put together the phrase before returning it
+    first.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
 
     return first;
 }
@@ -302,12 +323,50 @@ function getVisitorInfo() {
         first_name : 'Nina',
         last_name : 'Højholdt',
         last_drink : {
-            drink_name : 'Espresso',
-            drink_id : '589b134671f90d703a4cf695'
+            drink_name : 'Americano',
+            drink_id : '589b133671f90d703a4cf693'
         }
     }
 
     return visitor_info;
+}
+
+function getConfirmation(chosenDrink) {
+
+    // Construct first suggestion obj
+    var qData = {
+        'phrase' : 'Great! What do you think of getting a ' + chosenDrink.name + ' then?',
+        'positive_answer' : 'I\'d love one of those! Hook me up with a cup of ' + chosenDrink.name + '!',
+        'negative_answer' : 'No, that wasn\'t exactly what I was looking for.'
+    }
+    insertQuestion(qData);
+
+    $('.elimination-answer').off('click');
+    $('.elimination-answer').on('click', function(e) {
+        var text = $(this).text();
+        var a_clone = $('.chat-answer-template').clone();
+        a_clone.text(text);
+        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+        $('.conversation-container').append(a_clone);
+
+        var answer;
+
+        if(e.target.id === 'positive-answer') {
+            answer = 'pos';
+        }
+        if(e.target.id === 'negative-answer') {
+            answer = 'neg';
+        }
+
+        if(answer === 'pos') {
+            finishJoe(chosenDrink);
+        }
+        else {
+            choices = {};
+            questionCounter = 0;
+            eliminationRound();
+        }
+    });
 }
 
 /*
