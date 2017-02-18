@@ -1,10 +1,22 @@
 var socket = io(); // socket.io
 
 // Location data
+var HELSINKI_LOC = {
+    'latitude' : 60.16952,
+    'longitude' : 24.93545
+};
+var STOCKHOLM_LOC = {
+    'latitude' : 59.33258,
+    'longitude' : 18.0649
+};
 var COPENHAGEN_LOC = {
     'latitude' : 55.67594,
     'longitude' : 12.56553
-}
+};
+
+var weather_data = {};
+
+var date = new Date();
 
 var bannedDrinkArray = [];
 var availableDrinkArray = [];
@@ -57,22 +69,48 @@ $(document).ready(function () {
  *
  */
 function startJoe() {
-    var first = getFirst();
-    insertQuestion(first);
+    // Get weather data
+    var location_data;
+    if(date.getMonth() === 2) {
+        if(date.getDate() < 29) {
+            location_data = HELSINKI_LOC;
+        }
+        else {
+            location_data = STOCKHOLM_LOC;
+        }
+    }
+    else {
+        location_data = COPENHAGEN_LOC;
+    }
 
-    $('body').on('click', '.first-answer', function(e) {
-        $('.first-answer').addClass('elimination-answer').removeClass('first-answer');
-        var text = $(this).text();
-        var a_clone = $('.chat-answer-template').clone();
-        a_clone.text(text);
-        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-        $('.conversation-container').append(a_clone);
-        if(e.target.id === 'positive-answer') {
-            finishJoe(first);
+    sendToPath('post', '/weather', location_data, function (error, response) {
+        // Empty weather_data, if we get an error code
+        if(response.errno === undefined) {
+            weather_data = response;
         }
-        if(e.target.id === 'negative-answer') {
-            eliminationRound();
+        else {
+            weather_data = {};
         }
+
+        var first = getFirst();
+        insertQuestion(first);
+
+        $('body').on('click', '.first-answer', function(e) {
+            $('.first-answer').addClass('elimination-answer').removeClass('first-answer');
+            var text = $(this).text();
+            var a_clone = $('.chat-answer-template').clone();
+            a_clone.text(text);
+            a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+            $('.conversation-container').append(a_clone);
+            if(e.target.id === 'positive-answer') {
+                finishJoe(first);
+            }
+            if(e.target.id === 'negative-answer') {
+                eliminationRound();
+            }
+        }, function() {
+
+        });
     });
 }
 
@@ -146,9 +184,16 @@ function eliminationRound() {
  */
 function getFirst() {
 
-    // Construct welcome greeting
+    // Construct welcome greetings
     var welcome_greetings = [];
-    var currentTime = new Date().getHours();
+    var weather_greetings = [];
+    var currentTime = date.getHours();
+
+    var shouldReactToWeather = false;
+    // Only react to weather sometimes and when we have weather data
+    if(Math.random() < 0.2 && !jQuery.isEmptyObject(weather_data)) {
+        shouldReactToWeather = true;
+    }
 
     if(currentTime >= 6 && currentTime < 11) {
         welcome_greetings = ['Goodmorning [VISITOR]!', 'Hi [VISITOR], hope you\'re having a great morning!'];
@@ -157,12 +202,48 @@ function getFirst() {
     } else if (currentTime >= 14 && currentTime < 18) {
         welcome_greetings = ['Goodafternoon [VISITOR]!', 'Hi [VISITOR], so nice to see you this afternoon.'];
     } else if (currentTime >= 18 && currentTime < 23) {
-        welcome_greetings = ['Goodevening [VISITOR]!', 'Goodevening [VISITOR], hope you\'re doing fine this lovely evening', 'Hi [VISITOR], in the mood for an evening coffee?'];
+        welcome_greetings = ['Goodevening [VISITOR]!', 'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.', 'Hi [VISITOR], in the mood for an evening coffee?'];
     } else {
         welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR]!'];
     }
 
     var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
+
+    console.log(weather_data);
+    if(shouldReactToWeather) {
+        if(parseInt(weather_data.cloudiness) > 75) {
+            weather_greetings = [
+                'Woah, it\'s looking cloudy!',
+                'Man, those clouds just won\'t quit today!'
+            ];
+        }
+        else if(parseInt(weather_data.fog) > 55) {
+            weather_greetings = [
+                'It sure is foggy today. You can barely see a thing!',
+                'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
+            ];
+        }
+        else if(parseInt(weather_data.rain) > 5) {
+            weather_greetings = [
+                'With all this rain, it\'s a good thing we\'re inside!',
+                'Ever heard the expression "When it rains, it pours"? I\'m pretty sure they mean it pours coffee.'
+            ];
+        }
+        else if(parseInt(weather_data.temperature) < 5) {
+            weather_greetings = [
+                'It\'s a cold one out there today. You better warm yourself with a cuppa joe.',
+                'Some people say you should drink cold drinks, when it\'s cold. I strongly disagree with those people.'
+            ];
+        }
+        else if(parseInt(weather_data.windSpeed.beaufort) > 5) {
+            weather_greetings = [
+                'Wow, the wind is really building up today!',
+                'In this windy weather, luckily getting a coffee is a breeze.'
+            ];
+        }
+        chosen_welcome_greeting += " " + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
+        console.log("React to weather");
+    }
 
     // Options if there's no visitor name
     var no_name_options = ['buddy', 'friend'];
@@ -170,14 +251,6 @@ function getFirst() {
     var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)]
     // Replace [VISITOR] with visitor name
     chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
-
-
-    // Get weather data
-    var location_data = COPENHAGEN_LOC;
-
-    sendToPath('post', '/weather', location_data, function (error, response) {
-        console.log(response);
-    });
 
     // Construct first suggestion obj
     var first = {

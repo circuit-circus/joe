@@ -37,7 +37,7 @@ main {
     display: flex;
     //justify-content: space-between;
     flex-direction: column;
-    overflow: hidden;
+    overflow: scroll;
 
     .chat-question-template, .chat-answer-template {
         display: none;

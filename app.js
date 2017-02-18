@@ -117,7 +117,7 @@ app.post('/weather', function(req, res, next) {
         if(err) {
             console.log('Could not get extended weather info for location');
             console.log('Error: ' + err);
-            return;
+            res.send(err);
         }
         if(location !== null) {
             location.getForecastForTime(currTime, function(err, result) {
