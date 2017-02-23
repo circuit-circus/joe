@@ -95,6 +95,12 @@ app.post('/drinks', function(req, res, next) {
     });
 });
 
+app.post('/rfid/recieve', function(req, res, next) {
+    var data = req.body;
+    console.log(data);
+    res.send('is good');
+});
+
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
     var dispenser_number = data.dispenser_number.toString();
