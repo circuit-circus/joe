@@ -59,30 +59,199 @@ $(document).ready(function () {
         }
     });
 
-    startJoe();
+    startWaiting();
 });
 
-
-
 /*
- * First round of the programme
+ * Function for starting the waiting process - that is, when Joe is not in use, but waiting for someone to tap their card or start him manually
  *
  */
-function startJoe() {
-    // Get weather data
-    var location_data;
+function startWaiting() {
+    var introJoe = {
+        'phrase' : 'Hi there! I\'m Joe, your personal barista. Tap your name tag on the reader to get started!',
+        'positive_answer' : 'I don\'t have a name tag :(',
+        'negative_answer' : 'I don\'t have a name tag :('
+    }
+
+    insertQuestion(introJoe);
+
+    // Listen for name tag being presented
+    socket.on('visitorCheckedIn', function (data) {
+        startIcebreaker(data);
+    });
+
+    // If user doesn't have a name tag, they can start manually
+    $('body').on('click', '.waiting-answer', function() {
+        startIcebreaker();
+    });
+}
+
+/*
+ * First round of the programme, the ice breaker, where Joe suggests a coffee
+ *
+ * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
+ */
+function startIcebreaker(visitor_data) {
+
+    $('.waiting-answer').addClass('icebreaker-answer').removeClass('waiting-answer');
+
+    // Get icebreaker question
+    getIcebreaker(visitor_data, function(icebreaker) {
+        insertQuestion(icebreaker);
+    });
+
+    $('body').on('click', '.icebreaker-answer', function() {
+    }, function(e) {
+        $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
+        var text = $(this).text();
+        var a_clone = $('.chat-answer-template').clone();
+        a_clone.text(text);
+        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+        $('.conversation-container').append(a_clone);
+        if(e.target.id === 'positive-answer') {
+            finishJoe(icebreaker);
+        }
+        if(e.target.id === 'negative-answer') {
+            eliminationRound();
+        }
+    });
+}
+
+/*
+ * Construct the icebreaker question
+ *
+ */
+function getIcebreaker(visitor_data, callback) {
+
+    // Check for visitor info, else use empty object
+    var visitor_info = visitor_data ? visitor_data : {};
+
+    // Get weather info
+    var location_data = getLocation();
+    getWeatherInfo(location_data, function(weather_data) {
+
+        // Construct welcome greetings
+        var welcome_greetings = [];
+        var weather_greetings = [];
+        var drink_greetings = ['How about a hot cup of [DRINK]?', 'I recommend a nice cup of [DRINK]!'];
+        var currentTime = date.getHours();
+
+        // Construct first suggestion obj
+        var icebreaker = {
+            'phrase' : 'How about an Espresso?',
+            '_id' : '589b134671f90d703a4cf695',
+            'name' : 'Espresso',
+            'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
+            'negative_answer' : 'No thanks, I\'m in the mood for something different',
+            'dispenser_number' : 4
+        }
+
+        var chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
+
+        var shouldReactToWeather = false,
+            shouldTryToUseLastDrink = false;
+
+        // Only react to weather sometimes and when we have weather data
+        if(Math.random() < 0.2 && !jQuery.isEmptyObject(weather_data)) {
+            shouldReactToWeather = true;
+        }
+        // Only use last drink sometimes
+        else if(Math.random() < 0.6) {
+            shouldTryToUseLastDrink = true;
+        }
+
+        // Find the right time of day
+        if(currentTime >= 6 && currentTime < 11) {
+            welcome_greetings = ['Goodmorning [VISITOR]!', 'Hi [VISITOR], hope you\'re having a great morning!'];
+        } else if(currentTime >= 11 && currentTime < 14) {
+            welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR], how are you?', 'Hi [VISITOR]! So nice to see you.', 'Welcome [VISITOR]!'];
+        } else if (currentTime >= 14 && currentTime < 18) {
+            welcome_greetings = ['Goodafternoon [VISITOR]!', 'Hi [VISITOR], so nice to see you this afternoon.'];
+        } else if (currentTime >= 18 && currentTime < 23) {
+            welcome_greetings = ['Goodevening [VISITOR]!', 'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.', 'Hi [VISITOR], in the mood for an evening coffee?'];
+        } else {
+            welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR]!'];
+        }
+
+        var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
+
+        // Options if there's no visitor name
+        var no_name_options = ['buddy', 'friend'];
+        var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
+
+        // Figure out how to talk about the weather
+        if(shouldReactToWeather) {
+            if(parseInt(weather_data.cloudiness) > 75) {
+                weather_greetings = [
+                    'Woah, it\'s looking cloudy!',
+                    'Man, those clouds just won\'t quit today!'
+                ];
+            }
+            else if(parseInt(weather_data.fog) > 55) {
+                weather_greetings = [
+                    'It sure is foggy today. You can barely see a thing!',
+                    'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
+                ];
+            }
+            else if(parseInt(weather_data.rain) > 5) {
+                weather_greetings = [
+                    'With all this rain, it\'s a good thing we\'re inside!',
+                    'Ever heard the expression "When it rains, it pours"? I\'m pretty sure they mean it pours coffee.'
+                ];
+            }
+            else if(parseInt(weather_data.temperature) < 5) {
+                weather_greetings = [
+                    'It\'s a cold one out there today. You better warm yourself with a cuppa joe.',
+                    'Some people say you should drink cold drinks, when it\'s cold. I strongly disagree with those people.'
+                ];
+            }
+            else if(parseInt(weather_data.windSpeed.beaufort) > 5) {
+                weather_greetings = [
+                    'Wow, the wind is really building up today!',
+                    'In this windy weather, luckily getting a coffee is a breeze.'
+                ];
+            }
+            chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
+        }
+        else if(shouldTryToUseLastDrink) {
+            if(visitor_info.last_drink !== undefined) {
+                icebreaker._id = visitor_info.last_drink.drink_id;
+                icebreaker.name = visitor_info.last_drink.drink_name;
+            }
+        }
+        // Replace [DRINK] with chosen start drink
+        chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', icebreaker.name);
+
+        // Replace [VISITOR] with visitor name
+        chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
+
+        // Put together the phrase before returning it
+        icebreaker.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
+
+        callback(icebreaker);
+    });
+}
+
+/*
+ * Get location of the current event for the weather service
+ *
+ * @return (Object) The current location coordinates
+ */
+function getLocation() {
     if(date.getMonth() === 2) {
         if(date.getDate() < 29) {
-            location_data = HELSINKI_LOC;
+            return HELSINKI_LOC;
         }
         else {
-            location_data = STOCKHOLM_LOC;
+            return STOCKHOLM_LOC;
         }
     }
     else {
-        location_data = COPENHAGEN_LOC;
+        return COPENHAGEN_LOC;
     }
+}
 
+function getWeatherInfo(location_data, callback) {
     sendToPath('post', '/weather', location_data, function (error, response) {
         // Empty weather_data, if we get an error code
         if(response.errno === undefined) {
@@ -92,25 +261,7 @@ function startJoe() {
             weather_data = {};
         }
 
-        var first = getFirst();
-        insertQuestion(first);
-
-        $('body').on('click', '.first-answer', function() {
-            
-        }, function(e) {
-            $('.first-answer').addClass('elimination-answer').removeClass('first-answer');
-            var text = $(this).text();
-            var a_clone = $('.chat-answer-template').clone();
-            a_clone.text(text);
-            a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-            $('.conversation-container').append(a_clone);
-            if(e.target.id === 'positive-answer') {
-                finishJoe(first);
-            }
-            if(e.target.id === 'negative-answer') {
-                eliminationRound();
-            }
-        });
+        callback(weather_data);
     });
 }
 
@@ -179,113 +330,6 @@ function eliminationRound() {
 }
 
 /*
- * Get the first example (test data atm)
- *
- */
-function getFirst() {
-
-    // Construct welcome greetings
-    var welcome_greetings = [];
-    var weather_greetings = [];
-    var drink_greetings = ['How about a hot cup of [DRINK]?', 'I recommend a nice cup of [DRINK]!'];
-    var currentTime = date.getHours();
-
-    // Construct first suggestion obj
-    var first = {
-        'phrase' : 'How about an Espresso?',
-        '_id' : '589b134671f90d703a4cf695',
-        'name' : 'Espresso',
-        'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
-        'negative_answer' : 'No thanks, I\'m in the mood for something different',
-        'dispenser_number' : 4
-    }
-
-    var chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
-
-    var shouldReactToWeather = false,
-        shouldTryToUseLastDrink = false;
-    // Only react to weather sometimes and when we have weather data
-    if(Math.random() < 0.2 && !jQuery.isEmptyObject(weather_data)) {
-        shouldReactToWeather = true;
-    }
-    // Only use last drink sometimes
-    else if(Math.random() < 0.6) {
-        shouldTryToUseLastDrink = true;
-    }
-
-    // Find the right time of day
-    if(currentTime >= 6 && currentTime < 11) {
-        welcome_greetings = ['Goodmorning [VISITOR]!', 'Hi [VISITOR], hope you\'re having a great morning!'];
-    } else if(currentTime >= 11 && currentTime < 14) {
-        welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR], how are you?', 'Hi [VISITOR]! So nice to see you.', 'Welcome [VISITOR]!'];
-    } else if (currentTime >= 14 && currentTime < 18) {
-        welcome_greetings = ['Goodafternoon [VISITOR]!', 'Hi [VISITOR], so nice to see you this afternoon.'];
-    } else if (currentTime >= 18 && currentTime < 23) {
-        welcome_greetings = ['Goodevening [VISITOR]!', 'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.', 'Hi [VISITOR], in the mood for an evening coffee?'];
-    } else {
-        welcome_greetings = ['Hi there [VISITOR]!', 'Hello [VISITOR]!'];
-    }
-
-    var chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
-
-    // Options if there's no visitor name
-    var no_name_options = ['buddy', 'friend'];
-    var visitor_info = getVisitorInfo();
-    var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
-
-    // Figure out how to talk about the weather
-    if(shouldReactToWeather) {
-        if(parseInt(weather_data.cloudiness) > 75) {
-            weather_greetings = [
-                'Woah, it\'s looking cloudy!',
-                'Man, those clouds just won\'t quit today!'
-            ];
-        }
-        else if(parseInt(weather_data.fog) > 55) {
-            weather_greetings = [
-                'It sure is foggy today. You can barely see a thing!',
-                'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
-            ];
-        }
-        else if(parseInt(weather_data.rain) > 5) {
-            weather_greetings = [
-                'With all this rain, it\'s a good thing we\'re inside!',
-                'Ever heard the expression "When it rains, it pours"? I\'m pretty sure they mean it pours coffee.'
-            ];
-        }
-        else if(parseInt(weather_data.temperature) < 5) {
-            weather_greetings = [
-                'It\'s a cold one out there today. You better warm yourself with a cuppa joe.',
-                'Some people say you should drink cold drinks, when it\'s cold. I strongly disagree with those people.'
-            ];
-        }
-        else if(parseInt(weather_data.windSpeed.beaufort) > 5) {
-            weather_greetings = [
-                'Wow, the wind is really building up today!',
-                'In this windy weather, luckily getting a coffee is a breeze.'
-            ];
-        }
-        chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
-    }
-    else if(shouldTryToUseLastDrink) {
-        if(visitor_info.last_drink !== undefined) {
-            first._id = visitor_info.last_drink.drink_id;
-            first.name = visitor_info.last_drink.drink_name;
-        }
-    }
-    // Replace [DRINK] with chosen start drink
-    chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', first.name);
-
-    // Replace [VISITOR] with visitor name
-    chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
-
-    // Put together the phrase before returning it
-    first.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
-
-    return first;
-}
-
-/*
  * Insert questions / answers to the dom
  *
  */
@@ -321,7 +365,6 @@ function checkDrinkAvailability(callback) {
         availableDrinkArray = response;
         callback(availableDrinkArray.length);
     });
-
 }
 
 /*

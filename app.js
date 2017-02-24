@@ -96,9 +96,45 @@ app.post('/drinks', function(req, res, next) {
 });
 
 app.post('/rfid/recieve', function(req, res, next) {
-    var data = req.body;
-    console.log(data);
-    res.send('is good');
+
+    var tagsession_query = req.body;
+
+    MongoClient.connect(url).then(function (db) {
+        tagsessions = db.collection('tagsessions');
+        guests = db.collection('guests');
+
+        tagsessions.find(tagsession_query).toArray(function(err, result) {
+            if(err) {
+                console.log('Could not find EPC in DB');
+                console.log('Error: ' + err);
+                return;
+            }
+
+            var guest_query = {
+                _id : new ObjectId(result[0]._guest)
+            }
+
+            guests.find(guest_query).toArray(function(err, result) {
+                if(err) {
+                    console.log('Could not find Guest in DB');
+                    console.log('Error: ' + err);
+                    return;
+                }
+
+                io.on('connection', function(socket) {
+                    socket.emit('visitorCheckedIn', result);
+                });
+
+                res.send('is good');
+
+            });
+
+        });
+
+    }).catch(function (err) {
+        console.log('Could not connect to Mongo');
+        console.log('Error: ' + err);
+    });
 });
 
 app.post('/dispense', function(req, res, next) {
