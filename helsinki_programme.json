@@ -1,0 +1,225 @@
+[
+    [
+        {
+            "title": "Coffee & Croissant / TechGarden opens",
+            "location": "Tech Garden",
+            "time": {
+                "start_time": "08:00",
+                "end_time": "08:45"
+            }
+        },
+        {
+            "title": "Welcome",
+            "location": "Main Stage",
+            "speaker": "Antti Maki / GroupM",
+            "time": {
+                "start_time": "08:45",
+                "end_time": "09:00"
+            }
+        },
+        {
+            "title": "The Digital Ecosystem",
+            "location": "Main Stage",
+            "speaker": "Rob Norman / GroupM Global",
+            "time": {
+                "start_time": "09:00",
+                "end_time": "09:40"
+            }
+        },
+        {
+            "title": "Addressable TV",
+            "location": "Stage 1",
+            "speaker": "Sebastian Busse / Smartclip",
+            "time": {
+                "start_time": "10:00",
+                "end_time": "10:30"
+            }
+        },
+        {
+            "title": "The Revolutionary New Way of Brand Storytelling",
+            "location": "Stage 2",
+            "speaker": "Clément Frey / Celtra London",
+            "time": {
+                "start_time": "10:00",
+                "end_time": "10:30"
+            }
+        },
+        {
+            "title": "Marketing In the Age of Assistance",
+            "location": "Main Stage",
+            "speaker": "Andrea van Scheltinga / Google, Harry Davies / Google",
+            "time": {
+                "start_time": "10:45",
+                "end_time": "11:30"
+            }
+        },
+        {
+            "title": "Breakout Session by Pavegen",
+            "location": "Stage 1",
+            "speaker": "Archie Wilkinson / Pavegen",
+            "time": {
+                "start_time": "12:00",
+                "end_time": "12:30"
+            }
+        }, {
+            "title": "Will today’s iPhone be tomorrow’s media planner?",
+            "location": "Stage 2",
+            "speaker": "Richard Lloyd / Maxus Global",
+            "time": {
+                "start_time": "12:00",
+                "end_time": "12:30"
+            }
+        },
+        {
+            "title": "Lunch Break",
+            "location": "Tech Garden",
+            "time": {
+                "start_time": "12:30",
+                "end_time": "13:30"
+            }
+        },
+        {
+            "title": "The Future of Media, Out-of-Home",
+            "location": "Main Stage",
+            "speaker": "Stefan Lameire / Clear Channel",
+            "time": {
+                "start_time": "13:30",
+                "end_time": "14:15"
+            }
+        },
+        {
+            "title": "Maximize the effect of Programmatic through data & creative",
+            "location": "Stage 1",
+            "speaker": "Birgitte Jöhncke / Google",
+            "time": {
+                "start_time": "14:30",
+                "end_time": "15:00"
+            }
+        },
+        {
+            "title": "Breakout Session by Finnkino",
+            "location": "Stage 2",
+            "speaker": "Finnkino",
+            "time": {
+                "start_time": "14:30",
+                "end_time": "15:00"
+            }
+        },
+        {
+            "title": "Winning in Asia – How to approach Asian markets from the Nordics",
+            "location": "Stage 2",
+            "speaker": "Jakob Stigler / AOL",
+            "time": {
+                "start_time": "15:10",
+                "end_time": "15:40"
+            }
+        },
+        {
+            "title": "Breakout Session by Appnexus",
+            "location": "Stage 1",
+            "speaker": "Rikard Bildsten / Appnexus",
+            "time": {
+                "start_time": "15:10",
+                "end_time": "15:40"
+            }
+        },
+        {
+            "title": "Cyber Arms Race",
+            "location": "Main Stage",
+            "speaker": "Mikko Hyppönen / F-Secure",
+            "time": {
+                "start_time": "15:50",
+                "end_time": "16:35"
+            }
+        },
+        {
+            "title": "Recap",
+            "location": "Main Stage",
+            "speaker": "Antti Maki / GroupM",
+            "time": {
+                "start_time": "16:35",
+                "end_time": "16:50"
+            }
+        },
+        {
+            "title": "Mingling",
+            "time": {
+                "start_time": "16:50",
+                "end_time": "20:00"
+            }
+        }
+    ],
+    [
+        {
+            "title": "Coffee & Croissants/Tech garden opens",
+            "location": "Tech Garden",
+            "time": {
+                "start_time": "08:00",
+                "end_time": "08:45"
+            }
+        },
+        {
+            "title": "Welcome",
+            "location": "Main Stage",
+            "speaker": "Antti Maki / GroupM",
+            "time": {
+                "start_time": "08:45",
+                "end_time": "09:00"
+            }
+        },
+        {
+            "title": "What Happens When the Internet Disappears?",
+            "location": "Main Stage",
+            "speaker": "Chris Dancy / Human Cyborg",
+            "time": {
+                "start_time": "09:00",
+                "end_time": "09:45"
+            }
+        },
+        {
+            "title": "Breakout Session by Clear Channel",
+            "location": "Stage 1",
+            "speaker": "Clear Channel",
+            "time": {
+                "start_time": "10:00",
+                "end_time": "10:30"
+            }
+        },
+        {
+            "title": "Breakout Session",
+            "location": "Stage 2",
+            "speaker": "Biohax",
+            "time": {
+                "start_time": "10:00",
+                "end_time": "10:30"
+            }
+        },
+        {
+            "title": "Innovation is out, invention is in",
+            "location": "Main Stage",
+            "speaker": "David Shing / AOL",
+            "time": {
+                "start_time": "10:40",
+                "end_time": "11:25"
+            }
+        },
+        {
+            "title": "Tomorrow Today: An Introduction to Exponentials",
+            "location": "Main Stage",
+            "speaker": "Pascal Finette / Singularity University",
+            "time": {
+                "start_time": "11:30",
+                "end_time": "12:15"
+            }
+        },
+        {
+            "title": "Recap",
+            "location": "Main Stage",
+            "speaker": "Antti Maki / GroupM",
+            "time": {
+                "start_time": "12:15",
+                "end_time": "12:30"
+            }
+        }
+    ]
+]
