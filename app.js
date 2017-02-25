@@ -23,6 +23,7 @@ var url = 'mongodb://localhost:27017/nextM17';
 /* SERIAL COM */
 var serialport = require('serialport');
 var sp;
+// var portName = '/dev/cu.usbmodem411';
 // var sp = new serialport.SerialPort(portName, {
 //     baudRate: 9600,
 //     dataBits: 8,
@@ -43,6 +44,7 @@ serialport.list(function (err, ports) {
             console.log('Connecting to ' + port.comName);
             sp = new serialport(port.comName, {
                 dataBits: 8,
+                baudRate: 9600,
                 parity: 'none',
                 stopBits: 1,
                 flowControl: false,
@@ -56,6 +58,8 @@ serialport.list(function (err, ports) {
                     console.log('Port opened on ' + port.comName);
                 }
             });
+
+
         }
     });
 });
@@ -64,6 +68,7 @@ serialport.list(function (err, ports) {
 io.on('connection', function(socket) {
     if(sp !== undefined && sp.isOpen()) {
         sp.on('data', function(input) {
+            console.log(input);
             socket.emit('buttonPress', input);
         });
     }
@@ -149,12 +154,25 @@ app.post('/rfid/recieve', function(req, res, next) {
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
-    var dispenser_number = data.dispenser_number.toString();
+    var coffee_number = data.coffee_number.toString() + '\n';
+
+    console.log(coffee_number);
 
     if(sp !== undefined && sp.isOpen()) {
-        sp.write(dispenser_number, function(err) {
-            console.log('Could not send dispenser signal');
-            console.log('Error: ' + err);
+        sp.write(coffee_number, function(err) {
+            if(err) {
+                console.log('Could not send dispenser signal');
+                console.log('Error: ' + err);
+            }
+            res.send('okk');
+            sp.drain(function(error) {
+                if(error) {
+                    console.log('Could not drain');
+                    console.log('Error: ' + err);
+                }
+                
+            })
+            
         });
     }
 });
