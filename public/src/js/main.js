@@ -23,6 +23,7 @@ var availableDrinkArray = [];
 
 var choices = {};
 
+var isServing = false;
 var questionCounter = 0;
 var question_data = [
     {
@@ -59,7 +60,9 @@ $(document).ready(function () {
         }
     });
 
-    startWaiting();
+    if(!isServing) {
+        startWaiting();
+    }
 });
 
 /*
@@ -75,14 +78,26 @@ function startWaiting() {
 
     insertQuestion(introJoe);
 
+    
     // Listen for name tag being presented
     socket.on('visitorCheckedIn', function (data) {
-        startIcebreaker(data);
+        if(!isServing) {
+            startIcebreaker(data);
+        }
+    });
+
+    // If we couldn't find user in DB, we just ignore the name part
+    socket.on('couldNotFindGuest', function (data) {
+        if(!isServing) {
+            startIcebreaker();
+        }
     });
 
     // If user doesn't have a name tag, they can start manually
     $('body').on('click', '.waiting-answer', function() {
-        startIcebreaker();
+        if(!isServing) {
+            startIcebreaker();
+        }
     });
 }
 
@@ -93,27 +108,30 @@ function startWaiting() {
  */
 function startIcebreaker(visitor_data) {
 
+    isServing = true;
+
     $('.waiting-answer').addClass('icebreaker-answer').removeClass('waiting-answer');
 
     // Get icebreaker question
     getIcebreaker(visitor_data, function(icebreaker) {
         insertQuestion(icebreaker);
-    });
 
-    $('body').on('click', '.icebreaker-answer', function() {
-    }, function(e) {
-        $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
-        var text = $(this).text();
-        var a_clone = $('.chat-answer-template').clone();
-        a_clone.text(text);
-        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-        $('.conversation-container').append(a_clone);
-        if(e.target.id === 'positive-answer') {
-            finishJoe(icebreaker);
-        }
-        if(e.target.id === 'negative-answer') {
-            eliminationRound();
-        }
+        $('body').on('click', '.icebreaker-answer', function() {
+        }, function(e) {
+            $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
+            var text = $(this).text();
+            var a_clone = $('.chat-answer-template').clone();
+            a_clone.text(text);
+            a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+            $('.conversation-container').append(a_clone);
+            if(e.target.id === 'positive-answer') {
+                finishJoe(icebreaker);
+            }
+            if(e.target.id === 'negative-answer') {
+                bannedDrinkArray.push(icebreaker._id);
+                eliminationRound();
+            }
+        });
     });
 }
 
@@ -124,7 +142,7 @@ function startIcebreaker(visitor_data) {
 function getIcebreaker(visitor_data, callback) {
 
     // Check for visitor info, else use empty object
-    var visitor_info = visitor_data ? visitor_data : {};
+    var visitor_info = visitor_data === undefined ? {} : visitor_data[0];
 
     // Get weather info
     var location_data = getLocation();
@@ -137,7 +155,7 @@ function getIcebreaker(visitor_data, callback) {
         var currentTime = date.getHours();
 
         // Construct first suggestion obj
-        var icebreaker = {
+        var icebreaker_suggestion = {
             'phrase' : 'How about an Espresso?',
             '_id' : '589b134671f90d703a4cf695',
             'name' : 'Espresso',
@@ -177,7 +195,7 @@ function getIcebreaker(visitor_data, callback) {
 
         // Options if there's no visitor name
         var no_name_options = ['buddy', 'friend'];
-        var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
+        var visitor_name = visitor_info.name ? visitor_info.name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
 
         // Figure out how to talk about the weather
         if(shouldReactToWeather) {
@@ -215,20 +233,20 @@ function getIcebreaker(visitor_data, callback) {
         }
         else if(shouldTryToUseLastDrink) {
             if(visitor_info.last_drink !== undefined) {
-                icebreaker._id = visitor_info.last_drink.drink_id;
-                icebreaker.name = visitor_info.last_drink.drink_name;
+                icebreaker_suggestion._id = visitor_info.last_drink.drink_id;
+                icebreaker_suggestion.name = visitor_info.last_drink.drink_name;
             }
         }
         // Replace [DRINK] with chosen start drink
-        chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', icebreaker.name);
+        chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', icebreaker_suggestion.name);
 
         // Replace [VISITOR] with visitor name
         chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
 
         // Put together the phrase before returning it
-        icebreaker.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
+        icebreaker_suggestion.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
 
-        callback(icebreaker);
+        callback(icebreaker_suggestion);
     });
 }
 
@@ -361,7 +379,15 @@ function scrollConversation() {
  *
  */
 function checkDrinkAvailability(callback) {
-    sendToPath('post', '/drinks', choices, function (error, response) {
+    var drink_query = choices;
+    drink_query._id = {
+        $nin: bannedDrinkArray
+    }
+
+    console.log(drink_query);
+
+    sendToPath('post', '/drinks', drink_query, function (error, response) {
+        console.log(response);
         availableDrinkArray = response;
         callback(availableDrinkArray.length);
     });
@@ -396,6 +422,7 @@ function getConfirmation(chosenDrink) {
         'positive_answer' : 'I\'d love one of those! Hook me up with a cup of ' + chosenDrink.name + '!',
         'negative_answer' : 'No, that wasn\'t exactly what I was looking for.'
     }
+
     insertQuestion(qData);
 
     $('.elimination-answer').off('click');
@@ -420,6 +447,7 @@ function getConfirmation(chosenDrink) {
         }
         else {
             choices = {};
+            bannedDrinkArray.push(chosenDrink._id)
             questionCounter = 0;
             eliminationRound();
         }
@@ -431,7 +459,6 @@ function getConfirmation(chosenDrink) {
  *
  */
 function finishJoe(chosenDrink) {
-    console.log(chosenDrink);
     var joeFinish = $('<div class="chat-question chat-buble"></div>');
     joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
     $('.conversation-container').append(joeFinish);
@@ -441,6 +468,15 @@ function finishJoe(chosenDrink) {
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
         console.log(response);
     });
+
+    // Restart programme
+    setTimeout(function() {
+        isServing = false;
+        questionCounter = 0;
+        $('.chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
+        startWaiting();
+    }, 2000);
+    
 }
 
 /*

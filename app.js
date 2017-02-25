@@ -97,9 +97,14 @@ app.post('/drinks', function(req, res, next) {
 
 app.post('/rfid/recieve', function(req, res, next) {
 
+    if(!req.body) {
+        return;
+    }
+    res.send('is good');
     var tagsession_query = req.body;
 
     MongoClient.connect(url).then(function (db) {
+
         tagsessions = db.collection('tagsessions');
         guests = db.collection('guests');
 
@@ -107,6 +112,14 @@ app.post('/rfid/recieve', function(req, res, next) {
             if(err) {
                 console.log('Could not find EPC in DB');
                 console.log('Error: ' + err);
+                return;
+            }
+
+            console.log(result);
+
+            // Could not find guest
+            if(result.length <= 0) {
+                io.sockets.emit('couldNotFindGuest', result);
                 return;
             }
 
@@ -121,12 +134,9 @@ app.post('/rfid/recieve', function(req, res, next) {
                     return;
                 }
 
-                io.on('connection', function(socket) {
-                    socket.emit('visitorCheckedIn', result);
-                });
+                console.log(result);
 
-                res.send('is good');
-
+                io.sockets.emit('visitorCheckedIn', result);
             });
 
         });
@@ -141,7 +151,7 @@ app.post('/dispense', function(req, res, next) {
     var data = req.body;
     var dispenser_number = data.dispenser_number.toString();
 
-    if(sp.isOpen()) {
+    if(sp !== undefined && sp.isOpen()) {
         sp.write(dispenser_number, function(err) {
             console.log('Could not send dispenser signal');
             console.log('Error: ' + err);
