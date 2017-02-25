@@ -75,7 +75,8 @@ function startWaiting() {
         'positive_answer' : 'I don\'t have a name tag :(',
         'negative_answer' : 'I don\'t have a name tag :('
     }
-
+    $('.answer-container').show();
+    $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer');
     insertQuestion(introJoe);
 
     
@@ -161,7 +162,7 @@ function getIcebreaker(visitor_data, callback) {
             'name' : 'Espresso',
             'positive_answer' : 'Yeah, that sounds great. Hit me, Joe!',
             'negative_answer' : 'No thanks, I\'m in the mood for something different',
-            'dispenser_number' : 4
+            'coffee_number' : 0
         }
 
         var chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
@@ -473,7 +474,7 @@ function finishJoe(chosenDrink) {
     setTimeout(function() {
         isServing = false;
         questionCounter = 0;
-        $('.chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
+        $('.conversation-container .chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
         startWaiting();
     }, 2000);
     
