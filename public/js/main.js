@@ -48,6 +48,9 @@ var question_data = [
     }
 ];
 
+var isWaiting = false;
+var isListeningForVisitor = false;
+var iceBreakerStarted = false;
 
 $(document).ready(function () {
 
@@ -73,33 +76,46 @@ $(document).ready(function () {
  */
 function startWaiting() {
     var introJoe = {
-        'phrase' : 'Hi there! I\'m Joe, your personal barista. Tap your name tag on the reader to get started!',
-        'positive_answer' : 'I don\'t have a name tag :(',
-        'negative_answer' : 'I don\'t have a name tag :('
+        'phrase' : 'Hi there! I\'m Joe, your personal barista. Press a button to get started!'
     }
-    insertQuestion(introJoe);
+    var q_clone = $('.chat-question-template').clone();
+    q_clone.text(introJoe.phrase);
+    q_clone.removeClass('chat-question-template').addClass('chat-question');
+    $('.conversation-container').append(q_clone);
 
-    
+    isWaiting = true;
+    $('body').off('click', '.waiting-answer');
+    $('body').on('click', '.waiting-answer', function(e) {
+        if(isWaiting) {
+            console.log('Clicked answer option for starting to listening for visitor');
+            isListeningForVisitor = true;
+            isWaiting = false;
+
+            setTimeout(function() {
+                if(!iceBreakerStarted) {
+                    console.log('Found no RFID');
+                    startIcebreaker();
+                }
+            }, 2000);
+        }
+    });
+
     // Listen for name tag being presented
     socket.on('visitorCheckedIn', function (data) {
-        if(!isServing) {
+        if(!isServing && isListeningForVisitor) {
+            console.log('Found visitor');
             startIcebreaker(data);
         }
     });
 
     // If we couldn't find user in DB, we just ignore the name part
     socket.on('couldNotFindGuest', function (data) {
-        if(!isServing) {
+        if(!isServing && isListeningForVisitor) {
+            console.log('Found RFID but no visitor');
             startIcebreaker();
         }
     });
 
-    // If user doesn't have a name tag, they can start manually
-    $('body').on('click', '.waiting-answer', function() {
-        if(!isServing) {
-            startIcebreaker();
-        }
-    });
 }
 
 /*
@@ -108,29 +124,35 @@ function startWaiting() {
  * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
  */
 function startIcebreaker(visitor_data) {
-
+    isListeningForVisitor = false;
     isServing = true;
-
-    $('.waiting-answer').addClass('icebreaker-answer').removeClass('waiting-answer');
+    iceBreakerStarted = true;
 
     // Get icebreaker question
     getIcebreaker(visitor_data, function(icebreaker) {
         insertQuestion(icebreaker);
+        $('.answer-option').removeClass('waiting-answer').addClass('icebreaker-answer');
+        $('.answer-container').removeClass('hidden');
 
-        $('body').on('click', '.icebreaker-answer', function() {
-        }, function(e) {
-            $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
-            var text = $(this).text();
-            var a_clone = $('.chat-answer-template').clone();
-            a_clone.text(text);
-            a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-            $('.conversation-container').append(a_clone);
-            if(e.target.id === 'positive-answer') {
-                finishJoe(icebreaker);
-            }
-            if(e.target.id === 'negative-answer') {
-                bannedDrinkArray.push(icebreaker._id);
-                eliminationRound();
+        $('body').off('click', '.icebreaker-answer');
+        $('body').on('click', '.icebreaker-answer', function(e) {
+            console.log(e);
+            if(iceBreakerStarted = true) {
+                console.log('Clicked icebreaker answer');
+                iceBreakerStarted = false;
+                $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
+                var text = $(this).text();
+                var a_clone = $('.chat-answer-template').clone();
+                a_clone.text(text);
+                a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+                $('.conversation-container').append(a_clone);
+                if(e.target.id === 'positive-answer') {
+                    finishJoe(icebreaker);
+                }
+                if(e.target.id === 'negative-answer') {
+                    bannedDrinkArray.push(icebreaker._id);
+                    eliminationRound();
+                }
             }
         });
     });
@@ -296,8 +318,9 @@ function eliminationRound() {
     var question = question_data[questionCounter];
     insertQuestion(question);
 
-    $('.elimination-answer').off('click');
-    $('.elimination-answer').on('click', function(e) {
+    $('body').off('click', '.elimination-answer');
+    $('body').on('click', '.elimination-answer', function(e) {
+        console.log('Clicked elimination answer');
         var text = $(this).text();
         var a_clone = $('.chat-answer-template').clone();
         a_clone.text(text);
@@ -426,8 +449,9 @@ function getConfirmation(chosenDrink) {
 
     insertQuestion(qData);
 
-    $('.elimination-answer').off('click');
-    $('.elimination-answer').on('click', function(e) {
+    $('body').off('click', '.elimination-answer');
+    $('body').on('click', '.elimination-answer', function(e) {
+        console.log('Clicked elimination answer for confirmation');
         var text = $(this).text();
         var a_clone = $('.chat-answer-template').clone();
         a_clone.text(text);
@@ -464,7 +488,7 @@ function finishJoe(chosenDrink) {
     joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
     $('.conversation-container').append(joeFinish);
     scrollConversation();
-    $('.answer-container').hide();
+    $('.answer-container').addClass('hidden');
 
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
         console.log(response);
@@ -480,12 +504,9 @@ function finishJoe(chosenDrink) {
     setTimeout(function() {
         $('.conversation-container .chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
         $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer');
-        $('.answer-container').show();
-        $('.chat-buble.answer-option').off('click');
         startWaiting();
         //window.location.reload();
     }, 2000);
-    
 }
 
 /*

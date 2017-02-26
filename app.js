@@ -170,9 +170,7 @@ app.post('/dispense', function(req, res, next) {
                     console.log('Could not drain');
                     console.log('Error: ' + err);
                 }
-                
             })
-            
         });
     }
 });

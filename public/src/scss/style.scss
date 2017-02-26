@@ -17,8 +17,7 @@ body {
 
 main {
     font-family: $normalfont;
-    width: 100%;
-    max-width: 800px;
+    width: 95%;
     margin: 0 auto;
 }
 
@@ -47,8 +46,9 @@ main {
         background-color: #fff;
         color: #171717;
         margin-bottom: 2rem;
-        width: 60%;
+        max-width: 480px;
         position: relative;
+        align-self: flex-start;
 
         &:after {
             content: '';
@@ -63,7 +63,7 @@ main {
 
     .chat-answer {
         margin-bottom: 2rem;
-        width: 60%;
+        max-width: 480px;
         position: relative;
         border: 2px solid #fff;
         align-self: flex-end;
@@ -86,6 +86,10 @@ main {
     margin: 8vh 0 2vh;
     display: flex;
     justify-content: space-between;
+
+    &.hidden {
+        display: none;
+    }
 
     .answer-option {
         flex: 1;
