@@ -54,8 +54,10 @@ $(document).ready(function () {
     // Listen for button presses
     socket.on('buttonPress', function (data) {
         if(data === 'L') {
+            console.log('Got L');
             $('#positive-answer').click();
         } else if (data === 'R') {
+            console.log('Got R');
             $('#negative-answer').click();
         }
     });
@@ -75,8 +77,6 @@ function startWaiting() {
         'positive_answer' : 'I don\'t have a name tag :(',
         'negative_answer' : 'I don\'t have a name tag :('
     }
-    $('.answer-container').show();
-    $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer');
     insertQuestion(introJoe);
 
     
@@ -470,12 +470,20 @@ function finishJoe(chosenDrink) {
         console.log(response);
     });
 
+    choices = {};
+    bannedDrinkArray = [];
+    availableDrinkArray = [];
+    isServing = false;
+    questionCounter = 0;
+
     // Restart programme
     setTimeout(function() {
-        isServing = false;
-        questionCounter = 0;
         $('.conversation-container .chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
+        $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer');
+        $('.answer-container').show();
+        $('.chat-buble.answer-option').off('click');
         startWaiting();
+        //window.location.reload();
     }, 2000);
     
 }
