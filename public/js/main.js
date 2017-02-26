@@ -66,6 +66,11 @@ $(document).ready(function () {
         }
     });
 
+    $('body').off('click', '.lol');
+    $('body').on('click', '.lol', function() {
+        $('#positive-answer').click();
+    });
+
     if(!isServing) {
         startWaiting();
     }
