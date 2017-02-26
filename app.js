@@ -175,6 +175,11 @@ app.post('/dispense', function(req, res, next) {
     }
 });
 
+app.post('/update_visitor_last_drink', function(req, res, next) {
+    var data = req.body;
+    console.log(data);
+});
+
 app.post('/weather', function(req, res, next) {
 
     var currTime = new Date();

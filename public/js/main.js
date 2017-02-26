@@ -22,6 +22,8 @@ var bannedDrinkArray = [];
 
 var choices = {};
 
+var current_visitor = null;
+
 var isServing = false;
 var questionCounter = 0;
 var question_data = [
@@ -103,7 +105,8 @@ function startWaiting() {
     socket.on('visitorCheckedIn', function (data) {
         if(!isServing && isListeningForVisitor) {
             console.log('Found visitor');
-            startIcebreaker(data);
+            current_visitor = data;
+            startIcebreaker();
         }
     });
 
@@ -122,13 +125,13 @@ function startWaiting() {
  *
  * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
  */
-function startIcebreaker(visitor_data) {
+function startIcebreaker() {
     isListeningForVisitor = false;
     isServing = true;
     iceBreakerStarted = true;
 
     // Get icebreaker question
-    getIcebreaker(visitor_data, function(icebreaker) {
+    getIcebreaker(function(icebreaker) {
         insertQuestion(icebreaker);
         $('.answer-option').removeClass('waiting-answer').addClass('icebreaker-answer');
         $('.answer-container').removeClass('hidden');
@@ -161,12 +164,12 @@ function startIcebreaker(visitor_data) {
  * Construct the icebreaker question
  *
  */
-function getIcebreaker(visitor_data, callback) {
+function getIcebreaker(callback) {
 
     var icebreaker_choices;
 
     // Check for visitor info, else use empty object
-    var visitor_info = visitor_data === undefined ? {} : visitor_data[0];
+    var visitor_info = current_visitor === null ? {} : current_visitor[0];
 
     // Get weather info
     var location_data = getLocation();
@@ -576,10 +579,22 @@ function finishJoe(chosenDrink) {
         console.log(response);
     });
 
+    // If we have visitor info, update the database with their choice
+    if(current_visitor !== null) {
+        var updateVisitorLastDrinkData = {
+            visitor_id : current_visitor._id,
+            chosen_drink : chosenDrink._id
+        }
+        sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
+
+        });
+    }
+
     choices = {};
     bannedDrinkArray = [];
     isServing = false;
     questionCounter = 0;
+    current_visitor = null;
 
     // Restart programme
     setTimeout(function() {
