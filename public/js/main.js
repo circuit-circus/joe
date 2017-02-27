@@ -232,7 +232,7 @@ function startWaiting() {
  * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
  */
 function startIcebreaker() {
-    
+
     removeDots();
 
     isListeningForVisitor = false;
@@ -576,7 +576,7 @@ function eliminationRound() {
  *
  */
 function insertQuestion(data, callback) {
-    
+
     $('.answer-option').removeClass('activity-answer');
 
     // Save the most recently added answer class, which ends with '-answer'
@@ -730,7 +730,7 @@ function finishJoe(chosenDrink) {
     // If we have visitor info, update the database with their choice
     if(current_visitor !== null) {
         var updateVisitorLastDrinkData = {
-            visitor_id : current_visitor._id,
+            visitor_id : current_visitor[0]._id,
             chosen_drink : chosenDrink._id
         }
         sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {

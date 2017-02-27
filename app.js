@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 
 var db = require('./db')
+var ObjectId = require('mongodb').ObjectID;
 
 var yrno = require('yr.no-forecast');
 
@@ -170,7 +171,24 @@ app.post('/dispense', function(req, res, next) {
 
 app.post('/update_visitor_last_drink', function(req, res, next) {
     var data = req.body;
-    console.log(data);
+
+    var guest_query = {
+        'guest_id' : new ObjectId(data.visitor_id)
+    };
+
+    var update_query = {
+        'last_drink' : new ObjectId(data.chosen_drink),
+        'guest_id' : new ObjectId(data.visitor_id)
+    };
+
+    visitor_data = db.get().collection('visitor_data');
+    visitor_data.update(guest_query, update_query, function(err, result) {
+        if(err) {
+            console.log('Could not find EPC in DB');
+            console.log('Error: ' + err);
+            return;
+        }
+    });
 });
 
 app.post('/weather', function(req, res, next) {
