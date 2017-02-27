@@ -119,8 +119,6 @@ app.post('/rfid/recieve', function(req, res, next) {
             return;
         }
 
-        console.log(result);
-
         // Could not find guest
         if(result.length <= 0) {
             io.sockets.emit('couldNotFindGuest', result);
@@ -138,8 +136,6 @@ app.post('/rfid/recieve', function(req, res, next) {
                 return;
             }
 
-            console.log(result);
-
             io.sockets.emit('visitorCheckedIn', result);
         });
 
@@ -148,7 +144,7 @@ app.post('/rfid/recieve', function(req, res, next) {
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
-    var coffee_number = data.dispenser_number.toString() + '\n';
+    var coffee_number = data.coffee_number.toString() + '\n';
 
     console.log(coffee_number);
 
