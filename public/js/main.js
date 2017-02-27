@@ -184,10 +184,7 @@ function startWaiting() {
     var introJoe = {
         'phrase' : 'Hi there! I\'m Joe, your personal barista. Press a button to get started!'
     }
-    var q_clone = $('.chat-question-template').clone();
-    q_clone.text(introJoe.phrase);
-    q_clone.removeClass('chat-question-template').addClass('chat-question');
-    $('.conversation-container').append(q_clone);
+    updateQuestionDOM(introJoe.phrase);
     $('.answer-container').addClass('hidden');
 
     isWaiting = true;
@@ -597,10 +594,7 @@ function insertQuestion(data, callback) {
     console.log(recentConversation);
 
     noActionQuestionTimer = setTimeout(function() {
-        var q_clone = $('.chat-question-template').clone();
-        q_clone.text(data.phrase);
-        q_clone.removeClass('chat-question-template').addClass('chat-question');
-        $('.conversation-container').append(q_clone);
+        updateQuestionDOM(data.phrase);
 
         $('.answer-option#positive-answer').text(data.positive_answer);
         $('.answer-option#negative-answer').text(data.negative_answer);
@@ -621,9 +615,27 @@ function insertQuestion(data, callback) {
 
     var a_clone = $('.chat-answer-template').clone();
     a_clone.text(text);
-    a_clone.removeClass('chat-answer-template').addClass('chat-answer');
     $('.conversation-container').append(a_clone);
     scrollConversation();
+    a_clone.addClass('chat-buble-animating');
+    setTimeout(function() {
+        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+    }, 1);
+ }
+
+ /*
+ * Add a new question to the conversation and scroll down to it
+ *
+ */
+ function updateQuestionDOM(text) {
+    var q_clone = $('.chat-question-template').clone();
+    q_clone.text(text);
+    $('.conversation-container').append(q_clone);
+    scrollConversation();
+    q_clone.addClass('chat-buble-animating');
+    setTimeout(function() {
+        q_clone.removeClass('chat-question-template').addClass('chat-question');
+    }, 1);
  }
 
 /*
@@ -702,9 +714,8 @@ function getConfirmation(chosenDrink) {
  *
  */
 function finishJoe(chosenDrink) {
-    var joeFinish = $('<div class="chat-question chat-buble"></div>');
-    joeFinish.text('Great! Here\'s your ' + chosenDrink.name);
-    $('.conversation-container').append(joeFinish);
+    var joeFinishStatement = 'Great! Here\'s your ' + chosenDrink.name;
+    updateQuestionDOM(joeFinishStatement);
     scrollConversation();
     $('.answer-container').addClass('hidden');
 

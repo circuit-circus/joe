@@ -38,8 +38,25 @@ main {
     flex-direction: column;
     overflow: scroll;
 
+    .chat-buble {
+        transition: transform 300ms ease-in-out, opacity 500ms ease-in-out;
+    }
+
+    .chat-question-template {
+        transform: translateX(-50px);
+    }
+
+    .chat-answer-template {
+        transform: translateX(50px);
+    }
+
     .chat-question-template, .chat-answer-template, .chat-dots-template {
         display: none;
+        opacity: 0;
+    }
+
+    .chat-buble-animating {
+        display: initial;
     }
 
     .chat-question {
@@ -47,6 +64,8 @@ main {
         color: #171717;
         margin-bottom: 2rem;
         max-width: 480px;
+        opacity: 1;
+        transform: translateX(0px);
         position: relative;
         align-self: flex-start;
 
@@ -101,6 +120,7 @@ main {
     .chat-answer {
         margin-bottom: 2rem;
         max-width: 480px;
+        opacity: 1;
         position: relative;
         border: 2px solid #fff;
         align-self: flex-end;
