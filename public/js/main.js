@@ -276,10 +276,8 @@ function startIcebreaker() {
  */
 function getIcebreaker(callback) {
 
-    var icebreaker_choices;
-
     // Check for visitor info, else use empty object
-    var visitor_info = current_visitor === null ? {} : current_visitor[0];
+    var visitor_info = current_visitor === null ? {} : current_visitor;
 
     // Get weather info
     var location_data = getLocation();
@@ -301,13 +299,15 @@ function getIcebreaker(callback) {
 
         // Choose which elements to react to and suggest from
         var elements = ['programme', 'time'];
-        if(visitor_info.lastDrink)elements.push('lastDrink');
+        if(visitor_info.last_drink) elements.push('last_drink');
         if(!$.isEmptyObject(weather_data)) elements.push('weather');
         elements = shuffle(elements);
         var reactToElements = [elements[0], elements[1]];
 
-        console.log('REACTING TO');
-        console.log(reactToElements);
+        reactToElements[0] = 'last_drink';
+
+        // console.log('REACTING TO');
+        // console.log(reactToElements);
 
         /* TIME */
         var currentTime = date.getHours();
@@ -362,8 +362,8 @@ function getIcebreaker(callback) {
                 ];
             }
         }
-        console.log('WELCOME GREETINGS');
-        console.log(welcome_greetings);
+        // console.log('WELCOME GREETINGS');
+        // console.log(welcome_greetings);
         chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
 
         /* WEATHER */
@@ -377,11 +377,11 @@ function getIcebreaker(callback) {
         }
         var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
 
-        console.log('CHOSEN WEATHER ELEMENT');
-        console.log(chosen_weather_element);
+        // console.log('CHOSEN WEATHER ELEMENT');
+        // console.log(chosen_weather_element);
 
-        console.log('WEAHTER');
-        console.log(weather_data);
+        // console.log('WEAHTER');
+        // console.log(weather_data);
 
         if(reactToElements[0] === 'weather' || reactToElements[1] === 'weather') {
             if(chosen_weather_element === 'cloudy') {
@@ -439,19 +439,32 @@ function getIcebreaker(callback) {
         }
 
         /* LAST DRINK */
+        if(reactToElements[0] === 'last_drink') {
+
+            icebreaker_choices = {
+                'coffee_number' : visitor_info.last_drink
+            }
+
+            drink_greetings = [
+                'Last time you visited me, you had a cup of [DRINK]. Would you like that again?',
+                'How did you enjoy the [DRINK] you had last time? Wan\'t another one of those?'
+            ];
+        }
+
 
         /* PROGRAMME */
 
+        // console.log('DRINK GREETINGS');
+        // console.log(drink_greetings);
 
-        console.log('DRINK GREETINGS');
-        console.log(drink_greetings);
-
-        console.log('ICEBREAKER CHOICES');
-        console.log(icebreaker_choices);
+        // console.log('ICEBREAKER CHOICES');
+        // console.log(icebreaker_choices);
 
         // If there's only one option left, that's the coffee
         getAvailableDrinks(icebreaker_choices, function(availableDrinks) {
             var suggested_drink = availableDrinks[0];
+            // console.log('SUGGESTED');
+            // console.log(suggested_drink);
 
             chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
 
@@ -593,8 +606,8 @@ function insertQuestion(data, callback) {
         recentConversation.negative_answer = data.negative_answer;
     }
 
-    console.log('RECENT CONVERSATION');
-    console.log(recentConversation);
+    // console.log('RECENT CONVERSATION');
+    // console.log(recentConversation);
 
     noActionQuestionTimer = setTimeout(function() {
         updateQuestionDOM(data.phrase);
@@ -658,9 +671,9 @@ function scrollConversation() {
  *
  */
 function getAvailableDrinks(drink_query, callback) {
-    drink_query._id = {
-        $nin: bannedDrinkArray
-    }
+    // drink_query._id = {
+    //     $nin: bannedDrinkArray
+    // }
 
     //console.log(drink_query);
 
@@ -730,9 +743,10 @@ function finishJoe(chosenDrink) {
     // If we have visitor info, update the database with their choice
     if(current_visitor !== null) {
         var updateVisitorLastDrinkData = {
-            visitor_id : current_visitor[0]._id,
-            chosen_drink : chosenDrink._id
+            visitor_id : current_visitor._id,
+            chosen_drink_number : chosenDrink.coffee_number
         }
+
         sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
 
         });
