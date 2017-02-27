@@ -64,14 +64,22 @@ serialport.list(function (err, ports) {
     });
 });
 
+var listenForVisitors = false;
+
 // Listen for Arduino buttonpresses
 io.on('connection', function(socket) {
+
     if(sp !== undefined && sp.isOpen()) {
         sp.on('data', function(input) {
             console.log(input);
             socket.emit('buttonPress', input);
         });
     }
+
+    // Turn listening for visitors on / off
+    socket.on('listenForVisitors', function(msg) {
+        listenForVisitors = msg;
+    });
 });
 
 /* ROUTES */
@@ -102,11 +110,12 @@ app.post('/drinks', function(req, res, next) {
 
 app.post('/rfid/recieve', function(req, res, next) {
 
-    if(!req.body) {
-        return;
-    }
-    res.send('is good');
     var tagsession_query = req.body;
+    if(!tagsession_query) return;
+    
+    res.send('is good');
+
+    if(!listenForVisitors) return;
 
     MongoClient.connect(url).then(function (db) {
 
