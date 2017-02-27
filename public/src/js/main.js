@@ -28,24 +28,24 @@ var isServing = false;
 var questionCounter = 0;
 var question_data = [
     {
-        "phrase" : "Would you prefer a big or a small coffee?",
-        "positive_answer" : "Small for me",
-        "negative_answer" : "Big, please!"
+        "phrase" : "No problem, let's find something you like! Would you prefer a big or a small coffee?",
+        "positive_answer" : "Small for me, thanks.",
+        "negative_answer" : "A big one, please!"
     },
     {
-        "phrase" : "How strong do you like it?",
-        "positive_answer" : "Not too strong",
+        "phrase" : "Great, and how strong do you like it?",
+        "positive_answer" : "Not too strong.",
         "negative_answer" : "Give me a kick!"
     },
     {
-        "phrase" : "You want milk in that?",
-        "positive_answer" : "Yes, please",
-        "negative_answer" : "I like it black like my soul!"
+        "phrase" : "Alright, we're getting closer! Would you like a milky coffee?",
+        "positive_answer" : "Yes, give me milk please!",
+        "negative_answer" : "Nope, I prefer it black."
     },
     {
-        "phrase" : "How frothy you want that milk?",
-        "positive_answer" : "Lots of froth",
-        "negative_answer" : "No froth"
+        "phrase" : "Yum, I love milky drinks too. Would you like it frothy?",
+        "positive_answer" : "Frothy sounds delicious, hit me!",
+        "negative_answer" : "No thanks, not this time."
     }
 ];
 
@@ -303,8 +303,6 @@ function getIcebreaker(callback) {
         if(!$.isEmptyObject(weather_data)) elements.push('weather');
         elements = shuffle(elements);
         var reactToElements = [elements[0], elements[1]];
-
-        reactToElements[0] = 'last_drink';
 
         // console.log('REACTING TO');
         // console.log(reactToElements);
@@ -626,7 +624,7 @@ function insertQuestion(data, callback) {
  *
  */
  function updateAnswerDOM(text) {
-    $('.answer-option').text('');
+    $('.answer-option').text('').append('<div class="dot"></div><div class="dot"></div><div class="dot"></div>');
 
     var a_clone = $('.chat-answer-template').clone();
     a_clone.text(text);
@@ -690,10 +688,23 @@ function getAvailableDrinks(drink_query, callback) {
 function getConfirmation(chosenDrink) {
 
     // Construct first suggestion obj
+    var confirmation_phrases = [
+        'May a suggest a nice cup of ' + chosenDrink.name + ' then?',
+        'Great! What do you think about getting a ' + chosenDrink.name + ' then?',
+        'Great choices! I would suggest a cup of ' + chosenDrink.name + ' for you!'
+    ];
+    var confirmation_positive_answers = [
+        'I\'d love one of those! Hook me up with a cup of ' + chosenDrink.name + '!',
+        chosenDrink.name + ' sounds delicious. I\'d love one of those!'
+    ];
+    var confirmation_negative_answers = [
+        'Hmmm, that wasn\'t exactly what I was looking for.',
+        'I don\'t feel like one of those at the moment, can we start over?'
+    ];
     var qData = {
-        'phrase' : 'Great! What do you think of getting a ' + chosenDrink.name + ' then?',
-        'positive_answer' : 'I\'d love one of those! Hook me up with a cup of ' + chosenDrink.name + '!',
-        'negative_answer' : 'No, that wasn\'t exactly what I was looking for.'
+        'phrase' : confirmation_phrases[Math.floor(Math.random()*confirmation_phrases.length)],
+        'positive_answer' : confirmation_positive_answers[Math.floor(Math.random()*confirmation_positive_answers.length)],
+        'negative_answer' : confirmation_negative_answers[Math.floor(Math.random()*confirmation_negative_answers.length)]
     }
 
     startDots(function() {
