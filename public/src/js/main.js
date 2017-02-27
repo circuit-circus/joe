@@ -156,7 +156,7 @@ function restartTimer() {
     clearTimeout(noActionQuestionTimer);
     clearTimeout(noActionTimer);
     clearTimeout(dotsTimer);
-    noActionTimer = setTimeout(askForPerson, 10000);
+    noActionTimer = setTimeout(askForPerson, 120000);
 }
 
 /*
