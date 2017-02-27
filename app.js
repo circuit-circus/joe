@@ -4,8 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
+var db = require('./db')
 
 var yrno = require('yr.no-forecast');
 
@@ -16,28 +15,26 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-// MongoDB URL
+/* CONNECT TO MONGO */
 var url = 'mongodb://localhost:27017/nextM17';
+db.connect(url, function(err) {
+    if(err) {
+        console.log('Could not connect to database');
+        console.log('Error: ' + err);
+        process.exit(1);
+        return;
+    }
 
+    console.log('Connected to database');
+
+    http.listen(5000, function() {
+      console.log('listening on *:5000');
+    });
+})
 
 /* SERIAL COM */
 var serialport = require('serialport');
 var sp;
-// var portName = '/dev/cu.usbmodem411';
-// var sp = new serialport.SerialPort(portName, {
-//     baudRate: 9600,
-//     dataBits: 8,
-//     parity: 'none',
-//     stopBits: 1,
-//     flowControl: false,
-//     parser: serialport.parsers.readline("\r\n")
-// });
-/*var sp = new serialport(portName, function(err) {
-    if(err) {
-        console.log('No serial connection');
-        console.log('Error: ' + err);
-    }
-});*/
 serialport.list(function (err, ports) {
     ports.forEach(function(port) {
         if(port.comName.indexOf('.usbmodem') !== -1) {
@@ -90,21 +87,15 @@ app.get('/', function(req, res, next) {
 app.post('/drinks', function(req, res, next) {
     var data = req.body;
 
-    MongoClient.connect(url).then(function (db) {
-        drinks = db.collection('coffee');
+    drinks = db.get().collection('coffee');
 
-        drinks.find(data).toArray(function(err, result) {
-            if(err) {
-                console.log('Could not find coffee in DB');
-                console.log('Error: ' + err);
-                return;
-            }
-            res.send(result);
-        });
-
-    }).catch(function (err) {
-        console.log('Could not get drinks');
-        console.log('Error: ' + err);
+    drinks.find(data).toArray(function(err, result) {
+        if(err) {
+            console.log('Could not find coffee in DB');
+            console.log('Error: ' + err);
+            return;
+        }
+        res.send(result);
     });
 });
 
@@ -112,58 +103,51 @@ app.post('/rfid/recieve', function(req, res, next) {
 
     var tagsession_query = req.body;
     if(!tagsession_query) return;
-    
+
     res.send('is good');
 
     if(!listenForVisitors) return;
 
-    MongoClient.connect(url).then(function (db) {
+    tagsessions = db.get().collection('tagsessions');
+    guests = db.get().collection('guests');
 
-        tagsessions = db.collection('tagsessions');
-        guests = db.collection('guests');
+    tagsessions.find(tagsession_query).toArray(function(err, result) {
+        if(err) {
+            console.log('Could not find EPC in DB');
+            console.log('Error: ' + err);
+            return;
+        }
 
-        tagsessions.find(tagsession_query).toArray(function(err, result) {
+        console.log(result);
+
+        // Could not find guest
+        if(result.length <= 0) {
+            io.sockets.emit('couldNotFindGuest', result);
+            return;
+        }
+
+        var guest_query = {
+            _id : new ObjectId(result[0]._guest)
+        }
+
+        guests.find(guest_query).toArray(function(err, result) {
             if(err) {
-                console.log('Could not find EPC in DB');
+                console.log('Could not find Guest in DB');
                 console.log('Error: ' + err);
                 return;
             }
 
             console.log(result);
 
-            // Could not find guest
-            if(result.length <= 0) {
-                io.sockets.emit('couldNotFindGuest', result);
-                return;
-            }
-
-            var guest_query = {
-                _id : new ObjectId(result[0]._guest)
-            }
-
-            guests.find(guest_query).toArray(function(err, result) {
-                if(err) {
-                    console.log('Could not find Guest in DB');
-                    console.log('Error: ' + err);
-                    return;
-                }
-
-                console.log(result);
-
-                io.sockets.emit('visitorCheckedIn', result);
-            });
-
+            io.sockets.emit('visitorCheckedIn', result);
         });
 
-    }).catch(function (err) {
-        console.log('Could not connect to Mongo');
-        console.log('Error: ' + err);
     });
 });
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
-    var coffee_number = data.coffee_number.toString() + '\n';
+    var coffee_number = data.dispenser_number.toString() + '\n';
 
     console.log(coffee_number);
 
@@ -212,9 +196,5 @@ app.post('/weather', function(req, res, next) {
             });
         }
     });
-});
-
-http.listen(5000, function() {
-  console.log('listening on *:5000');
 });
 
