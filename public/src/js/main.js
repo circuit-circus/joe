@@ -293,7 +293,7 @@ function getIcebreaker(callback) {
             'What about a hot cup of [DRINK]?',
             'Would you like a nice cup of [DRINK]?'
         ];
-        var no_name_options = ['buddy', 'friend'];
+        var no_name_options = ['buddy', 'friend', 'partner', 'hombre', 'kemosabe'];
 
         var icebreaker_choices = {};
         var chosen_welcome_greeting;
@@ -330,7 +330,10 @@ function getIcebreaker(callback) {
                 'Hi there [VISITOR]!',
                 'Hello [VISITOR], how are you?',
                 'Hi [VISITOR]! So nice to see you.',
-                'Welcome [VISITOR]!'
+                'Welcome [VISITOR]!',
+                'Howdy [VISITOR]!',
+                'Hola [VISITOR]!',
+                'What\'s cracking\' [VISITOR]?'
             ];
 
         } else if (currentTime >= 14 && currentTime < 18) {
@@ -600,7 +603,6 @@ function insertQuestion(data, callback) {
         $('.answer-option#negative-answer').text(data.negative_answer);
 
         removeDots();
-        scrollConversation();
 
         callback();
     }, (Math.random() * 1800) + 1800);
@@ -616,8 +618,9 @@ function insertQuestion(data, callback) {
     var a_clone = $('.chat-answer-template').clone();
     a_clone.text(text);
     $('.conversation-container').append(a_clone);
-    scrollConversation();
     a_clone.addClass('chat-buble-animating');
+    scrollConversation();
+
     setTimeout(function() {
         a_clone.removeClass('chat-answer-template').addClass('chat-answer');
     }, 1);
@@ -631,8 +634,9 @@ function insertQuestion(data, callback) {
     var q_clone = $('.chat-question-template').clone();
     q_clone.text(text);
     $('.conversation-container').append(q_clone);
-    scrollConversation();
     q_clone.addClass('chat-buble-animating');
+    scrollConversation();
+
     setTimeout(function() {
         q_clone.removeClass('chat-question-template').addClass('chat-question');
     }, 1);
@@ -643,6 +647,7 @@ function insertQuestion(data, callback) {
  *
  */
 function scrollConversation() {
+    console.log('Scroll to conversation');
     var elem = $('.chat-buble').last();
     var newScrollpos = Math.abs( ($('.conversation-container')[0].scrollHeight - elem.offset().top) + elem.height());
     $('.conversation-container').animate({ scrollTop: newScrollpos }, 750);
@@ -716,7 +721,6 @@ function getConfirmation(chosenDrink) {
 function finishJoe(chosenDrink) {
     var joeFinishStatement = 'Great! Here\'s your ' + chosenDrink.name;
     updateQuestionDOM(joeFinishStatement);
-    scrollConversation();
     $('.answer-container').addClass('hidden');
 
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
