@@ -177,10 +177,14 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
         'guest_id' : new ObjectId(data.visitor_id)
     };
 
+    var update_settings = {
+        upsert: true
+    }
+
     visitor_data = db.get().collection('visitor_data');
-    visitor_data.update(guest_query, update_query, function(err, result) {
+    visitor_data.update(guest_query, update_query, update_settings, function(err, result) {
         if(err) {
-            console.log('Could not find EPC in DB');
+            console.log('Could not update Last Drink');
             console.log('Error: ' + err);
             return;
         }
