@@ -137,6 +137,12 @@ app.post('/rfid/recieve', function(req, res, next) {
                 return;
             }
 
+            var guest_first_name = guest_result[0].name.substr(0, guest_result[0].name.indexOf(' '));
+            var guest_last_name = guest_result[0].name.substr(guest_result[0].name.indexOf(' ') + 1);
+
+            guest_result[0].first_name = guest_first_name;
+            guest_result[0].last_name = guest_last_name;
+
             var visitor_data_query = {
                 'guest_id' : new ObjectId(guest_result[0]._id)
             }

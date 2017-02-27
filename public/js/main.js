@@ -268,7 +268,7 @@ function startIcebreaker() {
             });
         });
     });
-}
+} // Holy batman that indentation
 
 /*
  * Construct the icebreaker question
@@ -467,7 +467,7 @@ function getIcebreaker(callback) {
             chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
 
             // Options if there's no visitor name
-            var visitor_name = visitor_info.name ? visitor_info.name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
+            var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
             // Replace [DRINK] with chosen start drink
             chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', suggested_drink.name);
 
