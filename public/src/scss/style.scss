@@ -38,7 +38,7 @@ main {
     flex-direction: column;
     overflow: scroll;
 
-    .chat-question-template, .chat-answer-template {
+    .chat-question-template, .chat-answer-template, .chat-dots-template {
         display: none;
     }
 
@@ -58,6 +58,43 @@ main {
             position: absolute;
             left: -8px;
             top: calc(50% - 6px);
+        }
+    }
+
+    .dot {
+        animation-duration: 1800ms;
+        animation-iteration-count: infinite;
+        animation-name: loading-dots;
+        animation-timing-function: ease-in-out;
+        background: #000;
+        border-radius: 5px;
+        display: inline-block;
+        height: 5px;
+        width: 5px;
+    }
+
+    .dot:nth-child(1) {
+        animation-delay: 0ms;
+    }
+    .dot:nth-child(2) {
+        animation-delay: 600ms;
+    }
+    .dot:nth-child(3) {
+        animation-delay: 1200ms;
+    }
+
+    @keyframes loading-dots {
+        0% {
+            transform: translateY(0px);
+        }
+        20% {
+            transform: translateY(-5px);
+        }
+        40% {
+            transform: translateY(0px);
+        }
+        100% {
+            transform: translateY(0px);
         }
     }
 

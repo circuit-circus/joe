@@ -53,7 +53,22 @@ var isWaiting = false;
 var isListeningForVisitor = false;
 var iceBreakerStarted = false;
 
+var noActionTimer,
+    noActionQuestionTimer,
+    dotsTimer;
+
+var recentConversation = {
+    "phrase" : "Sure thing. Just take your time!"
+};
+var recentClass;
+var shouldSaveRecentConversation = true;
+
 $(document).ready(function () {
+
+    // Set listener for asking user whether they're still there
+    $('body').on('click', '#positive-answer, #negative-answer', function() {
+        restartTimer();
+    });
 
     // Listen for button presses
     socket.on('buttonPress', function (data) {
@@ -77,6 +92,91 @@ $(document).ready(function () {
 });
 
 /*
+ * Function for adding some dots that indicate that Joe is typing
+ *
+ */
+function startDots(callback) {
+    console.log('... wiggling');
+    dotsTimer = setTimeout(function() {
+        var d_clone = $('.chat-dots-template').clone();
+        d_clone.removeClass('chat-dots-template').addClass('chat-dots');
+        $('.conversation-container').append(d_clone);
+        scrollConversation();
+        callback();
+    }, (Math.random() * 400) + 400);
+}
+
+/*
+ * Function for removing the dots
+ *
+ */
+function removeDots() {
+    console.log('Remove dots');
+    $('.chat-dots').remove();
+}
+
+/*
+ * Function for asking the visitor whether they are still at the booth
+ *
+ */
+function askForPerson() {
+    var qData = {
+        'phrase' : 'Are you still there?',
+        'positive_answer' : 'Yup! I\'m just thinking',
+        'negative_answer' : 'No, it\'s seems the other person left. Can you help me find a coffee?'
+    }
+    shouldSaveRecentConversation = false;
+
+    startDots(function() {
+
+        insertQuestion(qData, function() {
+            $('.answer-option').removeClass(recentClass);
+
+            $('body').off('click', '.activity-answer');
+            $('body').on('click', '.activity-answer', function(e) {
+                if(e.target.id === 'positive-answer') {
+                    resumeConversation(qData);
+                }
+                if(e.target.id === 'negative-answer') {
+                    restartJoe(0);
+                }
+            });
+        });
+
+        $('.answer-option').addClass('activity-answer');
+    });
+}
+
+/*
+ * Start the timers that make sure the user is still there
+ *
+ */
+function restartTimer() {
+    removeDots();
+    clearTimeout(noActionQuestionTimer);
+    clearTimeout(noActionTimer);
+    clearTimeout(dotsTimer);
+    noActionTimer = setTimeout(askForPerson, 10000);
+}
+
+/*
+ * Continue the conversation after asking whether the user is still there
+ *
+ */
+function resumeConversation(data) {
+    shouldSaveRecentConversation = true;
+
+    var text = data.positive_answer;
+    updateAnswerDOM(text);
+
+    startDots(function() {
+        insertQuestion(recentConversation, function() {
+            $('.answer-option').addClass(recentClass);
+        });
+    });
+}
+
+/*
  * Function for starting the waiting process - that is, when Joe is not in use, but waiting for someone to tap their card or start him manually
  *
  */
@@ -88,14 +188,18 @@ function startWaiting() {
     q_clone.text(introJoe.phrase);
     q_clone.removeClass('chat-question-template').addClass('chat-question');
     $('.conversation-container').append(q_clone);
+    $('.answer-container').addClass('hidden');
 
     isWaiting = true;
     $('body').off('click', '.waiting-answer');
     $('body').on('click', '.waiting-answer', function(e) {
         if(isWaiting) {
-            console.log('Clicked answer option for starting to listening for visitor');
             isListeningForVisitor = true;
             isWaiting = false;
+
+            startDots(function() {});
+
+            socket.emit('listenForVisitors', true);
 
             setTimeout(function() {
                 if(!iceBreakerStarted) {
@@ -131,36 +235,40 @@ function startWaiting() {
  * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
  */
 function startIcebreaker() {
+    
+    removeDots();
+
     isListeningForVisitor = false;
+    socket.emit('listenForVisitors', false);
     isServing = true;
     iceBreakerStarted = true;
 
     // Get icebreaker question
     getIcebreaker(function(icebreaker) {
-        insertQuestion(icebreaker);
-        $('.answer-option').removeClass('waiting-answer').addClass('icebreaker-answer');
-        $('.answer-container').removeClass('hidden');
+        var thisIcebreaker = icebreaker;
+        startDots(function() {
+            insertQuestion(thisIcebreaker, function() {
+                $('.answer-option').removeClass('waiting-answer').addClass('icebreaker-answer');
+                $('.answer-container').removeClass('hidden');
 
-        $('body').off('click', '.icebreaker-answer');
-        $('body').on('click', '.icebreaker-answer', function(e) {
-            console.log(e);
-            if(iceBreakerStarted = true) {
-                console.log('Clicked icebreaker answer');
-                iceBreakerStarted = false;
-                $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
-                var text = $(this).text();
-                var a_clone = $('.chat-answer-template').clone();
-                a_clone.text(text);
-                a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-                $('.conversation-container').append(a_clone);
-                if(e.target.id === 'positive-answer') {
-                    finishJoe(icebreaker);
-                }
-                if(e.target.id === 'negative-answer') {
-                    bannedDrinkArray.push(icebreaker._id);
-                    eliminationRound();
-                }
-            }
+                $('body').off('click', '.icebreaker-answer');
+                $('body').on('click', '.icebreaker-answer', function(e) {
+                    if(iceBreakerStarted = true) {
+                        iceBreakerStarted = false;
+                        $('.icebreaker-answer').addClass('elimination-answer').removeClass('icebreaker-answer');
+                        var text = $(this).text();
+                        updateAnswerDOM(text);
+
+                        if(e.target.id === 'positive-answer') {
+                            finishJoe(thisIcebreaker);
+                        }
+                        if(e.target.id === 'negative-answer') {
+                            bannedDrinkArray.push(thisIcebreaker._id);
+                            eliminationRound();
+                        }
+                    }
+                });
+            });
         });
     });
 }
@@ -260,11 +368,13 @@ function getIcebreaker(callback) {
 
         /* WEATHER */
         var weather_elements = [];
-        if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
-        if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
-        if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
-        if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
-        if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
+        if(!$.isEmptyObject(weather_data)) {
+            if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
+            if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
+            if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
+            if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
+            if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
+        }
         var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
 
         console.log('CHOSEN WEATHER ELEMENT');
@@ -408,77 +518,113 @@ function eliminationRound() {
         return;
     }*/
     var question = question_data[questionCounter];
-    insertQuestion(question);
+    startDots(function() {
+        insertQuestion(question, function() {
 
-    $('body').off('click', '.elimination-answer');
-    $('body').on('click', '.elimination-answer', function(e) {
-        console.log('Clicked elimination answer');
-        var text = $(this).text();
-        var a_clone = $('.chat-answer-template').clone();
-        a_clone.text(text);
-        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-        $('.conversation-container').append(a_clone);
+            $('body').off('click', '.elimination-answer');
+            $('body').on('click', '.elimination-answer', function(e) {
+                var text = $(this).text();
+                updateAnswerDOM(text);
 
-        var answer;
+                var answer;
 
-        if(e.target.id === 'positive-answer') {
-            answer = 'pos';
-        }
-        if(e.target.id === 'negative-answer') {
-            answer = 'neg';
-        }
-
-        switch(questionCounter) {
-            case 0:
-                choices.size = answer === 'pos' ? {$in: [1]} : {$in: [2]};
-                break;
-            case 1:
-                choices.strength = answer === 'pos' ? {$in: [1]} : {$in: [2]};
-                break;
-            case 2:
-                if(answer === 'pos') {
-                    choices.milk = {$in: [1]};
-                } else if (answer === 'neg') {
-                    choices.milk = {$in: [0]};
-                    choices.milk_froth = {$in: [0]};
+                if(e.target.id === 'positive-answer') {
+                    answer = 'pos';
                 }
-                break;
-            case 3:
-                choices.milk_froth = answer === 'pos' ? {$in: [1]} : {$in: [2]};
-                break;
-        }
+                if(e.target.id === 'negative-answer') {
+                    answer = 'neg';
+                }
 
-        questionCounter++;
+                switch(questionCounter) {
+                    case 0:
+                        choices.size = answer === 'pos' ? {$in: [1]} : {$in: [2]};
+                        break;
+                    case 1:
+                        choices.strength = answer === 'pos' ? {$in: [1]} : {$in: [2]};
+                        break;
+                    case 2:
+                        if(answer === 'pos') {
+                            choices.milk = {$in: [1]};
+                        } else if (answer === 'neg') {
+                            choices.milk = {$in: [0]};
+                            choices.milk_froth = {$in: [0]};
+                        }
+                        break;
+                    case 3:
+                        choices.milk_froth = answer === 'pos' ? {$in: [1]} : {$in: [2]};
+                        break;
+                }
 
-        // If there's only one option left, that's the coffee
-        getAvailableDrinks(choices, function(availableDrinks) {
-            if(availableDrinks.length > 1) {
-                eliminationRound();
-            } else {
-                getConfirmation(availableDrinks[0]);
-            }
+                questionCounter++;
+
+                // If there's only one option left, that's the coffee
+                getAvailableDrinks(choices, function(availableDrinks) {
+                    if(availableDrinks.length > 1) {
+                        eliminationRound();
+                    } else {
+                        getConfirmation(availableDrinks[0]);
+                    }
+                });
+
+            });
         });
-
     });
-
 }
 
 /*
  * Insert questions / answers to the dom
  *
  */
-function insertQuestion(data) {
+function insertQuestion(data, callback) {
+    
+    $('.answer-option').removeClass('activity-answer');
 
-    var q_clone = $('.chat-question-template').clone();
-    q_clone.text(data.phrase);
-    q_clone.removeClass('chat-question-template').addClass('chat-question');
-    $('.conversation-container').append(q_clone);
+    // Save the most recently added answer class, which ends with '-answer'
+    var recentClasses = $('.answer-option')[0].classList;
+    for(var i = 0; i < recentClasses.length; i++) {
+        if(recentClasses[i].includes('-answer')) {
+            recentClass = recentClasses[i];
+            $('.answer-option').removeClass('')
+        }
+    }
 
-    $('.answer-option#positive-answer').text(data.positive_answer);
-    $('.answer-option#negative-answer').text(data.negative_answer);
+    if(shouldSaveRecentConversation) {
+        recentConversation.positive_answer = data.positive_answer;
+        recentConversation.negative_answer = data.negative_answer;
+    }
 
-    scrollConversation();
+    console.log('RECENT CONVERSATION');
+    console.log(recentConversation);
+
+    noActionQuestionTimer = setTimeout(function() {
+        var q_clone = $('.chat-question-template').clone();
+        q_clone.text(data.phrase);
+        q_clone.removeClass('chat-question-template').addClass('chat-question');
+        $('.conversation-container').append(q_clone);
+
+        $('.answer-option#positive-answer').text(data.positive_answer);
+        $('.answer-option#negative-answer').text(data.negative_answer);
+
+        removeDots();
+        scrollConversation();
+
+        callback();
+    }, (Math.random() * 1800) + 1800);
 }
+
+/*
+ * Add a new answer to the conversation and scroll down to it
+ *
+ */
+ function updateAnswerDOM(text) {
+    $('.answer-option').text('');
+
+    var a_clone = $('.chat-answer-template').clone();
+    a_clone.text(text);
+    a_clone.removeClass('chat-answer-template').addClass('chat-answer');
+    $('.conversation-container').append(a_clone);
+    scrollConversation();
+ }
 
 /*
  * Utility function to scroll to the bottom chat
@@ -508,23 +654,6 @@ function getAvailableDrinks(drink_query, callback) {
 }
 
 /*
- * Get visitor info
- *
- */
-function getVisitorInfo() {
-    var visitor_info = {
-        first_name : 'Nina',
-        last_name : 'Højholdt',
-        last_drink : {
-            drink_name : 'Americano',
-            drink_id : '589b133671f90d703a4cf693'
-        }
-    }
-
-    return visitor_info;
-}
-
-/*
  * Get confirmation about the chosen drink from the user
  *
  */
@@ -537,35 +666,34 @@ function getConfirmation(chosenDrink) {
         'negative_answer' : 'No, that wasn\'t exactly what I was looking for.'
     }
 
-    insertQuestion(qData);
+    startDots(function() {
+        insertQuestion(qData, function() {
 
-    $('body').off('click', '.elimination-answer');
-    $('body').on('click', '.elimination-answer', function(e) {
-        console.log('Clicked elimination answer for confirmation');
-        var text = $(this).text();
-        var a_clone = $('.chat-answer-template').clone();
-        a_clone.text(text);
-        a_clone.removeClass('chat-answer-template').addClass('chat-answer');
-        $('.conversation-container').append(a_clone);
+            $('body').off('click', '.elimination-answer');
+            $('body').on('click', '.elimination-answer', function(e) {
+                var text = $(this).text();
+                updateAnswerDOM(text);
 
-        var answer;
+                var answer;
 
-        if(e.target.id === 'positive-answer') {
-            answer = 'pos';
-        }
-        if(e.target.id === 'negative-answer') {
-            answer = 'neg';
-        }
+                if(e.target.id === 'positive-answer') {
+                    answer = 'pos';
+                }
+                if(e.target.id === 'negative-answer') {
+                    answer = 'neg';
+                }
 
-        if(answer === 'pos') {
-            finishJoe(chosenDrink);
-        }
-        else {
-            choices = {};
-            bannedDrinkArray.push(chosenDrink._id)
-            questionCounter = 0;
-            eliminationRound();
-        }
+                if(answer === 'pos') {
+                    finishJoe(chosenDrink);
+                }
+                else {
+                    choices = {};
+                    bannedDrinkArray.push(chosenDrink._id)
+                    questionCounter = 0;
+                    eliminationRound();
+                }
+            });
+        });
     });
 }
 
@@ -595,19 +723,29 @@ function finishJoe(chosenDrink) {
         });
     }
 
+    restartJoe(2000);
+}
+
+function restartJoe(timerMs) {
     choices = {};
     bannedDrinkArray = [];
     isServing = false;
     questionCounter = 0;
     current_visitor = null;
+    isWaiting = false;
+    isListeningForVisitor = false;
+    iceBreakerStarted = false;
+    clearTimeout(noActionTimer);
+    clearTimeout(noActionQuestionTimer);
+    clearTimeout(dotsTimer);
 
+    console.log('Restart JOE');
     // Restart programme
     setTimeout(function() {
-        $('.conversation-container .chat-buble:not(.chat-question-template, .chat-answer-template)').remove();
-        $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer');
+        $('.conversation-container .chat-buble:not(.chat-question-template, .chat-answer-template, .chat-dots-template)').remove();
+        $('.answer-option').addClass('waiting-answer').removeClass('elimination-answer icebreaker-answer activity-answer');
         startWaiting();
-        //window.location.reload();
-    }, 2000);
+    }, timerMs);
 }
 
 /*
@@ -673,7 +811,7 @@ function sendToPath(method, path, data, progress, done) {
 }
 
 /**
- * Shuffles array in place. ES6 version
+ * Shuffles array in place.
  * @param {Array} a items The array containing the items.
  */
 function shuffle(a) {
