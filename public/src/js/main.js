@@ -120,6 +120,8 @@ function removeDots() {
  *
  */
 function askForPerson() {
+    ga('send', 'event', 'Timeout', 'Are you still there?');
+
     var qData = {
         'phrase' : 'Are you still there?',
         'positive_answer' : 'Yup! I\'m just thinking',
@@ -205,6 +207,7 @@ function startWaiting() {
 
             setTimeout(function() {
                 if(!iceBreakerStarted) {
+                    ga('send', 'event', 'RFID Scan', 'Fail');
                     console.log('Found no RFID');
                     startIcebreaker();
                 }
@@ -216,6 +219,7 @@ function startWaiting() {
     socket.on('visitorCheckedIn', function (data) {
         if(!isServing && isListeningForVisitor) {
             console.log('Found visitor');
+            ga('send', 'event', 'RFID Scan', 'Success');
             current_visitor = data;
             startIcebreaker();
         }
@@ -225,6 +229,7 @@ function startWaiting() {
     socket.on('couldNotFindGuest', function (data) {
         if(!isServing && isListeningForVisitor) {
             console.log('Found RFID but no visitor');
+            ga('send', 'event', 'RFID Scan', 'Success, but not in db');
             startIcebreaker();
         }
     });
@@ -308,8 +313,7 @@ function getIcebreaker(callback) {
             if(visitor_info.last_drink) elements.push('last_drink');
             if(!$.isEmptyObject(weather_data)) elements.push('weather');
             elements = shuffle(elements);
-            //var reactToElements = [elements[0], elements[1]];
-            var reactToElements = ['programme', elements[1]];
+            var reactToElements = [elements[0], elements[1]];
 
             // console.log('REACTING TO');
             // console.log(reactToElements);
@@ -843,9 +847,11 @@ function getConfirmation(chosenDrink) {
 
                 if(e.target.id === 'positive-answer') {
                     answer = 'pos';
+                    ga('send', 'event', 'Confirmation', 'Accepted');
                 }
                 if(e.target.id === 'negative-answer') {
                     answer = 'neg';
+                    ga('send', 'event', 'Confirmation', 'Rejected');
                 }
 
                 if(answer === 'pos') {
@@ -870,6 +876,8 @@ function finishJoe(chosenDrink) {
     var joeFinishStatement = 'Great! Here\'s your ' + chosenDrink.name;
     updateQuestionDOM(joeFinishStatement);
     $('.answer-container').addClass('hidden');
+
+    ga('send', 'event', 'Dispense', chosenDrink.name);
 
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
         console.log(response);
@@ -930,17 +938,7 @@ function sendToPath(method, path, data, progress, done) {
             withCredentials: true
         },
         success  : function (body) {
-            if (body.status == 1) {
-                // Redirect to destination if user is no longer logged in
-                if (body.code === 'NOT_LOGGED_IN') {
-                    $.notify('You are no longer logged in - redirecting you to the front page', 'failure');
-                    setTimeout(function () { handleRegistrationNextStep(body.next_step); }, 3000);
-                    return;
-                }
-                callback(body);
-            } else {
-                callback(undefined, body);
-            }
+            callback(undefined, body);
         },
         error    : function (body) {
             if(body.responseJSON) {

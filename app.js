@@ -7,13 +7,14 @@ var bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 var mail_credentials = require('./mail_credentials.json');
 
+var drinks;
 var db = require('./db')
 var ObjectId = require('mongodb').ObjectID;
 
 var yrno = require('yr.no-forecast');
 
 var fs = require('fs');
-var programmes;
+
 // Number of coffee left in dispensers
 var coffee_in_dispenser = [10, 10, 10, 10, 10, 10];
 
