@@ -211,7 +211,7 @@ app.post('/dispense', function(req, res, next) {
             });
 
             // Update dispenser inventory in DB
-            drinks = db.get().collection('coffee');
+            var drinks = db.get().collection('coffee');
             drinks.update({'dispenser_number' : coffee_number}, {'inventory_status' : coffee_in_dispenser[coffee_number]}, function(err, result) {
                 if(err) {
                     console.log('Could not update number of capsules left in dispenser');
@@ -287,8 +287,18 @@ app.get('/reset_coffee', function(req, res, next) {
     res.send('Coffee amount in dispensers has been reset');
 });
 
-app.get('/coffee_status', function(req, res, next) {
-    res.send(coffee_in_dispenser);
+app.get('/inventory_status', function(req, res, next) {
+
+    var drinks = db.get().collection('coffee');
+
+    drinks.find({}).toArray(function(err, result) {
+        if(err) {
+            console.log('Could not find coffee in DB');
+            console.log('Error: ' + err);
+            return;
+        }
+        res.send(result);
+    });
 });
 
 function sendWarningEmail(coffee_number) {
