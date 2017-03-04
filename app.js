@@ -195,7 +195,7 @@ app.post('/dispense', function(req, res, next) {
             // Update number of coffees left in dispenser
             coffee_in_dispenser[coffee_number] = coffee_in_dispenser[coffee_number] - 1;
             if(coffee_in_dispenser[coffee_number] <= 2) {
-                sendWarningEmail(coffee_in_dispenser[coffee_number]);
+                sendWarningEmail(coffee_number);
             }
 
             res.send('okk');
