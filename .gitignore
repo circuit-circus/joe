@@ -12,3 +12,4 @@ Dockerfile
 docker-compose.yml
 
 public/js/main-min.js
+mail_credentials.json
