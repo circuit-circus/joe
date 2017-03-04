@@ -286,208 +286,214 @@ function getIcebreaker(callback) {
 
     // Get weather info
     var location_data = getLocation();
-    getWeatherInfo(location_data, function(weather_data) {
+    getWithTheProgramme(location_data, function(programme_data) {
+        console.log(programme_data);
+        getWeatherInfo(location_data, function(weather_data) {
 
-        var welcome_greetings = [
-            'Hi there [VISITOR]!',
-            'Hello [VISITOR]!'
-        ];
-        var drink_greetings = [
-            'What about a hot cup of [DRINK]?',
-            'Would you like a nice cup of [DRINK]?'
-        ];
-        var no_name_options = ['buddy', 'friend', 'partner', 'hombre', 'kemosabe'];
-
-        var icebreaker_choices = {};
-        var chosen_welcome_greeting;
-        var chosen_drink_greeting;
-
-        // Choose which elements to react to and suggest from
-        var elements = ['programme', 'time'];
-        if(visitor_info.last_drink) elements.push('last_drink');
-        if(!$.isEmptyObject(weather_data)) elements.push('weather');
-        elements = shuffle(elements);
-        var reactToElements = [elements[0], elements[1]];
-
-        // console.log('REACTING TO');
-        // console.log(reactToElements);
-
-        /* TIME */
-        var currentTime = date.getHours();
-         // Find the right time of day
-        if(currentTime >= 6 && currentTime < 11) {
-            welcome_greetings = [
-                'Goodmorning [VISITOR]!',
-                'Hi [VISITOR], hope you\'re having a great morning!'
-            ];
-            if(reactToElements[0] === 'time') {
-                icebreaker_choices.strength = {$in: [2]};
-                drink_greetings = [
-                    'Would you like a nice strong cup of [DRINK]?',
-                    'It\'s early, how about a nice strong [DRINK] to wake you up?'
-                ];
-            }
-
-        } else if(currentTime >= 11 && currentTime < 14) {
-            welcome_greetings = [
+            var welcome_greetings = [
                 'Hi there [VISITOR]!',
-                'Hello [VISITOR], how are you?',
-                'Hi [VISITOR]! So nice to see you.',
-                'Welcome [VISITOR]!',
-                'Howdy [VISITOR]!',
-                'Hola [VISITOR]!',
-                'What\'s cracking\' [VISITOR]?'
+                'Hello [VISITOR]!'
             ];
-
-        } else if (currentTime >= 14 && currentTime < 18) {
-            welcome_greetings = [
-                'Goodafternoon [VISITOR]!',
-                'Hi [VISITOR], so nice to see you this afternoon.'
+            var drink_greetings = [
+                'What about a hot cup of [DRINK]?',
+                'Would you like a nice cup of [DRINK]?'
             ];
-            if(reactToElements[0] === 'time') {
-                icebreaker_choices.milk = {$in: [1]};
-                drink_greetings = [
-                    'How about a smooth cup of [DRINK]?',
-                    'Would you like an afternoon [DRINK]?'
+            var no_name_options = ['buddy', 'friend', 'partner', 'hombre', 'kemosabe'];
+
+            var icebreaker_choices = {};
+            var chosen_welcome_greeting;
+            var chosen_drink_greeting;
+
+            // Choose which elements to react to and suggest from
+            var elements = ['programme', 'time'];
+            if(visitor_info.last_drink) elements.push('last_drink');
+            if(!$.isEmptyObject(weather_data)) elements.push('weather');
+            elements = shuffle(elements);
+            //var reactToElements = [elements[0], elements[1]];
+            var reactToElements = ['programme', elements[1]];
+
+            // console.log('REACTING TO');
+            // console.log(reactToElements);
+
+            /* TIME */
+            var currentTime = date.getHours();
+             // Find the right time of day
+            if(currentTime >= 6 && currentTime < 11) {
+                welcome_greetings = [
+                    'Goodmorning [VISITOR]!',
+                    'Hi [VISITOR], hope you\'re having a great morning!'
                 ];
-            }
-
-        } else if (currentTime >= 18 && currentTime < 23) {
-            welcome_greetings = [
-                'Goodevening [VISITOR]!',
-                'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.'
-            ];
-            if(reactToElements[0] === 'time') {
-                icebreaker_choices.strength = {$in: [1]};
-                drink_greetings = [
-                    'In the mood for a cup of [DRINK]?',
-                    'Don\'t want too much caffeine this late, how about a nice cup of [DRINK]?'
-                ];
-            }
-        }
-        // console.log('WELCOME GREETINGS');
-        // console.log(welcome_greetings);
-        chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
-
-        /* WEATHER */
-        var weather_elements = [];
-        if(!$.isEmptyObject(weather_data)) {
-            if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
-            if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
-            if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
-            if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
-            if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
-        }
-        var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
-
-        // console.log('CHOSEN WEATHER ELEMENT');
-        // console.log(chosen_weather_element);
-
-        // console.log('WEAHTER');
-        // console.log(weather_data);
-
-        if(reactToElements[0] === 'weather' || reactToElements[1] === 'weather') {
-            if(chosen_weather_element === 'cloudy') {
-                weather_greetings = [
-                    'Woah, it\'s looking cloudy!',
-                    'Man, those clouds just won\'t quit today!'
-                ];
-
-                if(reactToElements[ 0] === 'weather') {
-                    icebreaker_choices.strength = {$in: [1]};
+                if(reactToElements[0] === 'time') {
+                    icebreaker_choices.strength = {$in: [2]};
                     drink_greetings = [
-                        'I think cloudiness calls for a nice cup of [DRINK]!'
+                        'Would you like a nice strong cup of [DRINK]?',
+                        'It\'s early, how about a nice strong [DRINK] to wake you up?'
                     ];
                 }
-            }
-            else if(chosen_weather_element === 'foggy') {
-                weather_greetings = [
-                    'It sure is foggy today. You can barely see a thing!',
-                    'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
+
+            } else if(currentTime >= 11 && currentTime < 14) {
+                welcome_greetings = [
+                    'Hi there [VISITOR]!',
+                    'Hello [VISITOR], how are you?',
+                    'Hi [VISITOR]! So nice to see you.',
+                    'Welcome [VISITOR]!',
+                    'Howdy [VISITOR]!'
                 ];
-            }
-            else if(chosen_weather_element === 'rainy') {
-                weather_greetings = [
-                    'With all this rain, it\'s a good thing we\'re inside!',
-                    'Ever heard the expression "When it rains, it pours"? I\'m pretty sure they mean it pours coffee.'
+
+            } else if (currentTime >= 14 && currentTime < 18) {
+                welcome_greetings = [
+                    'Goodafternoon [VISITOR]!',
+                    'Hi [VISITOR], so nice to see you this afternoon.'
                 ];
-                if(reactToElements[0] === 'weather') {
+                if(reactToElements[0] === 'time') {
                     icebreaker_choices.milk = {$in: [1]};
                     drink_greetings = [
-                        'I think milky drinks goes great with rain. How about a cup of [DRINK]?',
-                        'Rain = milk, yes? Would you like a delicious [DRINK]?'
+                        'How about a smooth cup of [DRINK]?',
+                        'Would you like an afternoon [DRINK]?'
                     ];
                 }
-            }
-            else if(chosen_weather_element === 'cold') {
-                weather_greetings = [
-                    'It\'s a cold one out there today. You better warm yourself with a cuppa joe.',
-                    'Some people say you should drink cold drinks, when it\'s cold. I strongly disagree with those people.'
+
+            } else if (currentTime >= 18 && currentTime < 23) {
+                welcome_greetings = [
+                    'Goodevening [VISITOR]!',
+                    'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.'
                 ];
-                if(reactToElements[0] === 'weather') {
-                    icebreaker_choices.size = {$in: [2]};
+                if(reactToElements[0] === 'time') {
+                    icebreaker_choices.strength = {$in: [1]};
                     drink_greetings = [
-                        'With a temperature like this, you might want a big hot cup of [DRINK]?',
-                        'How about a big nice cup of [DRINK] to warm you up?'
+                        'In the mood for a cup of [DRINK]?',
+                        'Don\'t want too much caffeine this late, how about a nice cup of [DRINK]?'
                     ];
                 }
             }
-            else if(chosen_weather_element === 'windy') {
-                weather_greetings = [
-                    'Wow, the wind is really building up today!',
-                    'In this windy weather, luckily getting a coffee is a breeze.'
+            // console.log('WELCOME GREETINGS');
+            // console.log(welcome_greetings);
+            chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
+
+            /* WEATHER */
+            var weather_elements = [];
+            if(!$.isEmptyObject(weather_data)) {
+                if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
+                if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
+                if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
+                if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
+                if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
+            }
+            var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
+
+            // console.log('CHOSEN WEATHER ELEMENT');
+            // console.log(chosen_weather_element);
+
+            // console.log('WEAHTER');
+            // console.log(weather_data);
+
+            if(reactToElements[0] === 'weather' || reactToElements[1] === 'weather') {
+                if(chosen_weather_element === 'cloudy') {
+                    weather_greetings = [
+                        'Woah, it\'s looking cloudy!',
+                        'Man, those clouds just won\'t quit today!'
+                    ];
+
+                    if(reactToElements[ 0] === 'weather') {
+                        icebreaker_choices.strength = {$in: [1]};
+                        drink_greetings = [
+                            'I think cloudiness calls for a nice cup of [DRINK]!'
+                        ];
+                    }
+                }
+                else if(chosen_weather_element === 'foggy') {
+                    weather_greetings = [
+                        'It sure is foggy today. You can barely see a thing!',
+                        'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
+                    ];
+                }
+                else if(chosen_weather_element === 'rainy') {
+                    weather_greetings = [
+                        'With all this rain, it\'s a good thing we\'re inside!',
+                        'Ever heard the expression "When it rains, it pours"? I\'m pretty sure they mean it pours coffee.'
+                    ];
+                    if(reactToElements[0] === 'weather') {
+                        icebreaker_choices.milk = {$in: [1]};
+                        drink_greetings = [
+                            'I think milky drinks goes great with rain. How about a cup of [DRINK]?',
+                            'Rain = milk, yes? Would you like a delicious [DRINK]?'
+                        ];
+                    }
+                }
+                else if(chosen_weather_element === 'cold') {
+                    weather_greetings = [
+                        'It\'s a cold one out there today. You better warm yourself with a cuppa joe.',
+                        'Some people say you should drink cold drinks, when it\'s cold. I strongly disagree with those people.'
+                    ];
+                    if(reactToElements[0] === 'weather') {
+                        icebreaker_choices.size = {$in: [2]};
+                        drink_greetings = [
+                            'With a temperature like this, you might want a big hot cup of [DRINK]?',
+                            'How about a big nice cup of [DRINK] to warm you up?'
+                        ];
+                    }
+                }
+                else if(chosen_weather_element === 'windy') {
+                    weather_greetings = [
+                        'Wow, the wind is really building up today!',
+                        'In this windy weather, luckily getting a coffee is a breeze.'
+                    ];
+                }
+                chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
+            }
+
+            /* LAST DRINK */
+            if(reactToElements[0] === 'last_drink') {
+
+                icebreaker_choices = {
+                    'coffee_number' : visitor_info.last_drink
+                }
+
+                drink_greetings = [
+                    'Last time you visited me, you had a cup of [DRINK]. Would you like that again?',
+                    'How did you enjoy the [DRINK] you had last time? Wan\'t another one of those?'
                 ];
             }
-            chosen_welcome_greeting += ' ' + weather_greetings[Math.floor(Math.random()*weather_greetings.length)];
-        }
 
-        /* LAST DRINK */
-        if(reactToElements[0] === 'last_drink') {
 
-            icebreaker_choices = {
-                'coffee_number' : visitor_info.last_drink
+            /* PROGRAMME */
+            if(reactToElements[0] === 'programme') {
+                var thisMoment = moment(programme_data[0].time.start_time);
+                console.log(thisMoment);
             }
 
-            drink_greetings = [
-                'Last time you visited me, you had a cup of [DRINK]. Would you like that again?',
-                'How did you enjoy the [DRINK] you had last time? Wan\'t another one of those?'
-            ];
-        }
+            // console.log('DRINK GREETINGS');
+            // console.log(drink_greetings);
 
+            // console.log('ICEBREAKER CHOICES');
+            // console.log(icebreaker_choices);
 
-        /* PROGRAMME */
+            // If there's only one option left, that's the coffee
+            getAvailableDrinks(icebreaker_choices, function(availableDrinks) {
+                var suggested_drink = availableDrinks[0];
+                // console.log('SUGGESTED');
+                // console.log(suggested_drink);
 
-        // console.log('DRINK GREETINGS');
-        // console.log(drink_greetings);
+                chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
 
-        // console.log('ICEBREAKER CHOICES');
-        // console.log(icebreaker_choices);
+                // Options if there's no visitor name
+                var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
+                // Replace [DRINK] with chosen start drink
+                chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', suggested_drink.name);
 
-        // If there's only one option left, that's the coffee
-        getAvailableDrinks(icebreaker_choices, function(availableDrinks) {
-            var suggested_drink = availableDrinks[0];
-            // console.log('SUGGESTED');
-            // console.log(suggested_drink);
+                // Replace [VISITOR] with visitor name
+                chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
 
-            chosen_drink_greeting = drink_greetings[Math.floor(Math.random()*drink_greetings.length)];
+                // Put together the phrase before returning it
+                var icebreaker_suggestion = suggested_drink;
+                icebreaker_suggestion.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
+                icebreaker_suggestion.positive_answer = 'Yeah, that sounds great. Hit me, Joe!';
+                icebreaker_suggestion.negative_answer = 'No thanks, I\'m in the mood for something different';
 
-            // Options if there's no visitor name
-            var visitor_name = visitor_info.first_name ? visitor_info.first_name : no_name_options[Math.floor(Math.random()*no_name_options.length)];
-            // Replace [DRINK] with chosen start drink
-            chosen_drink_greeting = chosen_drink_greeting.replace('[DRINK]', suggested_drink.name);
+                callback(icebreaker_suggestion);
+            });
 
-            // Replace [VISITOR] with visitor name
-            chosen_welcome_greeting = chosen_welcome_greeting.replace('[VISITOR]', visitor_name);
-
-            // Put together the phrase before returning it
-            var icebreaker_suggestion = suggested_drink;
-            icebreaker_suggestion.phrase = chosen_welcome_greeting + ' ' + chosen_drink_greeting;
-            icebreaker_suggestion.positive_answer = 'Yeah, that sounds great. Hit me, Joe!';
-            icebreaker_suggestion.negative_answer = 'No thanks, I\'m in the mood for something different';
-
-            callback(icebreaker_suggestion);
         });
-
     });
 }
 
@@ -521,6 +527,44 @@ function getWeatherInfo(location_data, callback) {
         }
 
         callback(weather_data);
+    });
+}
+
+function getWithTheProgramme(location_data, callback) {
+    sendToPath('get', '/programme', {}, function(error, response) {
+        if(!error) {
+            response = JSON.parse(response);
+            var thisLocation;
+            if(location_data.longitude == HELSINKI_LOC.longitude) {
+                thisLocation = 'Helsinki';
+            }
+            else if(location_data.longitude == STOCKHOLM_LOC.longitude) {
+                thisLocation = 'Stockholm';
+            }
+            else if(location_data.longitude == COPENHAGEN_LOC.longitude) {
+                thisLocation = 'Copenhagen';
+            }
+
+            var thisProgramme;
+            for(var i = 0; i < response.length; i++) {
+                if(thisLocation === response[i].location) {
+                    thisProgramme = response[i].day_programmes;
+                }
+            }
+
+            // If today is Wednesday
+            if(date.getDay() === 3) {
+                thisProgramme = thisProgramme.wednesday;
+            }
+            else {
+                thisProgramme = thisProgramme.thursday;
+            }
+
+            callback(thisProgramme);
+        }
+        else {
+            callback(error);
+        }
     });
 }
 

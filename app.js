@@ -9,7 +9,11 @@ var ObjectId = require('mongodb').ObjectID;
 
 var yrno = require('yr.no-forecast');
 
+var fs = require('fs');
+var programmes;
+
 /* SETUP */
+app.use('/node_modules', express.static(__dirname + '/node_modules'));
 app.use(express.static(__dirname + '/public'));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -213,6 +217,13 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
+    });
+});
+
+app.get('/programme', function(req, res, next) {
+    fs.readFile('./programme.json', 'utf8', (err, data) => {
+        if(err) throw err;
+        res.send(JSON.stringify(data));
     });
 });
 
