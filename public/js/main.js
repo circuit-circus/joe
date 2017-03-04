@@ -181,9 +181,14 @@ function resumeConversation(data) {
  *
  */
 function startWaiting() {
+    var introJoeGreetings = [
+        'Hi there! I\'m Joe, your personal barista. Press a button to get started!',
+        'Hey! My name is Joe. I\'m your personal barista. Press a button, so we can get started!',
+        'Hi, how are you? I\'m your personal barista, Joe. Press one of the buttons and I\'ll help you find the perfect coffee.'
+    ];
     var introJoe = {
-        'phrase' : 'Hi there! I\'m Joe, your personal barista. Press a button to get started!'
-    }
+        'phrase' : introJoeGreetings[Math.floor(Math.random()*introJoeGreetings.length)]
+    };
     updateQuestionDOM(introJoe.phrase);
     $('.answer-container').addClass('hidden');
 
@@ -689,7 +694,7 @@ function getConfirmation(chosenDrink) {
 
     // Construct first suggestion obj
     var confirmation_phrases = [
-        'May a suggest a nice cup of ' + chosenDrink.name + ' then?',
+        'May I suggest a nice cup of ' + chosenDrink.name + ' then?',
         'Great! What do you think about getting a ' + chosenDrink.name + ' then?',
         'Great choices! I would suggest a cup of ' + chosenDrink.name + ' for you!'
     ];
