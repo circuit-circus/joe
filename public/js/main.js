@@ -287,7 +287,6 @@ function getIcebreaker(callback) {
     // Get weather info
     var location_data = getLocation();
     getWithTheProgramme(location_data, function(programme_data) {
-        console.log(programme_data);
         getWeatherInfo(location_data, function(weather_data) {
 
             var welcome_greetings = [
@@ -457,9 +456,52 @@ function getIcebreaker(callback) {
 
 
             /* PROGRAMME */
-            if(reactToElements[0] === 'programme') {
-                var thisMoment = moment(programme_data[0].time.start_time);
-                console.log(thisMoment);
+            if(reactToElements[0] === 'programme' || reactToElements[1] === 'programme') {
+                var rightNow = moment();
+                var thisEvent = programme_data[Math.floor(Math.random()*programme_data.length)];
+                if(thisEvent.speaker !== undefined) {
+                    thisEvent.speaker = parseEventSpeaker(thisEvent.speaker);
+                }
+
+                var thisEventMoment = parseTime(thisEvent.time.start_time);
+
+                var programme_greetings = [''];
+
+                console.log(programme_data);
+                // Is the randomly chosen event about to start?
+                if(rightNow.isBetween(thisEventMoment, thisEventMoment.subtract(15, 'minutes'))) {
+
+                    if(thisEvent.location !== 'Tech Garden') {
+                        programme_greetings = [
+                            'Oh! It looks like ' + thisEvent.speaker[0] + ' is about to start a talk on ' + thisEvent.location + '. ',
+                            'Let\'s get you a coffee. Quick! Because ' + thisEvent.speaker[0] + ' is gonna talk on ' + thisEvent.location + ' at ' + thisEvent.time.start_time + '. '
+                        ];
+
+                        if(reactToElements[0] === 'programme') {
+                            drink_greetings = [
+                                'I think a [DRINK] would be perfect for the occasion!',
+                                'To keep you warm during the talk, I highly recommend a [DRINK]!'
+                            ];
+                        }
+                    }
+                    else {
+                        if(thisEvent.title.indexOf('/') !== -1) {
+                            thisEvent.title = thisEvent.title.substring(0, thisEvent.title.indexOf('/'));
+                        }
+
+                        programme_greetings = [
+                            'There\'s ' + thisEvent.title + ' in the ' + thisEvent.location + ' in a few minutes. And still you chose to come and hang out with me! '
+                        ];
+
+                        if(reactToElements[0] === 'programme') {
+                            drink_greetings = [
+                                'How about a [DRINK] to celebrate our friendship?',
+                                'To thank you, I\'d love to get you a [DRINK]!'
+                            ];
+                        }
+                    }
+                    chosen_welcome_greeting += ' ' + programme_greetings[Math.floor(Math.random()*programme_greetings.length)];
+                }
             }
 
             // console.log('DRINK GREETINGS');
@@ -495,6 +537,39 @@ function getIcebreaker(callback) {
 
         });
     });
+}
+
+function parseEventSpeaker(speaker) {
+    console.log(speaker);
+    if(speaker.indexOf('/') !== -1) {
+        speaker = speaker.split(' / ');
+        console.log(speaker);
+    }
+    else {
+        speaker = [speaker];
+    }
+    return speaker;
+}
+
+function parseTime(thisTime) {
+    var hour = thisTime.substring(0, 2);
+    var minute = thisTime.substring(3, 5);
+    var hourInt = parseInt(hour);
+    var minuteInt = parseInt(minute);
+
+    /*var timeStr = "";
+    if(hourInt < 12) {
+        timeStr = hour + ":" + minute + "AM";
+    }
+    else {
+        timeStr = (hourInt - 12) + ":" + minute + "PM";
+    }*/
+
+    var thisMoment = moment();
+    thisMoment.hour(hourInt);
+    thisMoment.minute(minuteInt);
+
+    return thisMoment;
 }
 
 /*
