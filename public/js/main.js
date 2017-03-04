@@ -930,17 +930,7 @@ function sendToPath(method, path, data, progress, done) {
             withCredentials: true
         },
         success  : function (body) {
-            if (body.status == 1) {
-                // Redirect to destination if user is no longer logged in
-                if (body.code === 'NOT_LOGGED_IN') {
-                    $.notify('You are no longer logged in - redirecting you to the front page', 'failure');
-                    setTimeout(function () { handleRegistrationNextStep(body.next_step); }, 3000);
-                    return;
-                }
-                callback(body);
-            } else {
-                callback(undefined, body);
-            }
+            callback(undefined, body);
         },
         error    : function (body) {
             if(body.responseJSON) {
