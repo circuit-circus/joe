@@ -261,6 +261,11 @@ app.post('/weather', function(req, res, next) {
     });
 });
 
+app.get('/reset_coffee', function(req, res, next) {
+    coffee_in_dispenser = [10, 10, 10, 10, 10, 10];
+    res.send('Coffee amount in dispensers has been reset');
+});
+
 function sendWarningEmail(coffee_number) {
     // setup email data with unicode symbols
     let mailOptions = {
