@@ -16,7 +16,7 @@ var yrno = require('yr.no-forecast');
 var fs = require('fs');
 
 // Number of coffee left in dispensers
-var coffee_in_dispenser = [10, 10, 10, 10, 10, 10];
+var coffee_inventory = [];
 
 /* SETUP */
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
@@ -40,6 +40,19 @@ db.connect(url, function(err) {
 
     http.listen(5000, function() {
         console.log('listening on *:5000');
+    });
+
+    // Get inventory status
+    var drinks = db.get().collection('coffee');
+    drinks.find({}).toArray(function(err, result) {
+        if(err) {
+            console.log('Could not find coffee in DB');
+            console.log('Error: ' + err);
+            return;
+        }
+        result.forEach(function(elem) {
+            coffee_inventory.push(elem.inventory_status);
+        });
     });
 });
 
@@ -187,18 +200,19 @@ app.post('/rfid/recieve', function(req, res, next) {
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
-    var coffee_number = data.coffee_number.toString() + '\n';
+    var coffee_number = data.coffee_number;
+    var coffee_number_arduino = coffee_number.toString() + '\n';
 
     if(sp !== undefined && sp.isOpen()) {
-        sp.write(coffee_number, function(err) {
+        sp.write(coffee_number_arduino, function(err) {
             if(err) {
                 console.log('Could not send dispenser signal');
                 console.log('Error: ' + err);
             }
 
             // Update number of coffees left in dispenser
-            coffee_in_dispenser[coffee_number] = coffee_in_dispenser[coffee_number] - 1;
-            if(coffee_in_dispenser[coffee_number] <= 2) {
+            coffee_inventory[coffee_number] = coffee_inventory[coffee_number] - 1;
+            if(coffee_inventory[coffee_number] <= 2) {
                 sendWarningEmail(coffee_number);
             }
 
@@ -208,7 +222,17 @@ app.post('/dispense', function(req, res, next) {
                     console.log('Could not drain');
                     console.log('Error: ' + err);
                 }
-            })
+            });
+
+            // Update dispenser inventory in DB
+            var drinks = db.get().collection('coffee');
+            drinks.update({'dispenser_number' : coffee_number}, {'inventory_status' : coffee_inventory[coffee_number]}, function(err, result) {
+                if(err) {
+                    console.log('Could not update number of capsules left in dispenser');
+                    console.log('Error: ' + err);
+                    return;
+                }
+            });
         });
     }
 });
@@ -272,9 +296,31 @@ app.post('/weather', function(req, res, next) {
     });
 });
 
-app.get('/reset_coffee', function(req, res, next) {
-    coffee_in_dispenser = [10, 10, 10, 10, 10, 10];
-    res.send('Coffee amount in dispensers has been reset');
+app.get('/reset_inventory', function(req, res, next) {
+    coffee_inventory = [10, 10, 10, 10, 10, 10];
+    var drinks = db.get().collection('coffee');
+    drinks.updateMany({}, {$set: {'inventory_status' : 10}}, function(err, result) {
+        if(err) {
+            console.log('Could not update number of capsules left in dispenser');
+            console.log('Error: ' + err);
+            return;
+        }
+        res.send('Coffee amount in dispensers has been reset');
+    });
+});
+
+app.get('/inventory_status', function(req, res, next) {
+
+    var drinks = db.get().collection('coffee');
+
+    drinks.find({}).toArray(function(err, result) {
+        if(err) {
+            console.log('Could not find coffee in DB');
+            console.log('Error: ' + err);
+            return;
+        }
+        res.send(result);
+    });
 });
 
 function sendWarningEmail(coffee_number) {
