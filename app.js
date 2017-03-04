@@ -183,10 +183,11 @@ app.post('/rfid/recieve', function(req, res, next) {
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
-    var coffee_number = data.coffee_number.toString() + '\n';
+    var coffee_number = data.coffee_number;
+    var coffee_number_arduino = coffee_number.toString() + '\n';
 
     if(sp !== undefined && sp.isOpen()) {
-        sp.write(coffee_number, function(err) {
+        sp.write(coffee_number_arduino, function(err) {
             if(err) {
                 console.log('Could not send dispenser signal');
                 console.log('Error: ' + err);
@@ -204,7 +205,17 @@ app.post('/dispense', function(req, res, next) {
                     console.log('Could not drain');
                     console.log('Error: ' + err);
                 }
-            })
+            });
+
+            // Update dispenser inventory in DB
+            drinks = db.get().collection('coffee');
+            drinks.update({'dispenser_number' : coffee_number}, {'inventory_status' : coffee_in_dispenser[coffee_number]}, function(err, result) {
+                if(err) {
+                    console.log('Could not update number of capsules left in dispenser');
+                    console.log('Error: ' + err);
+                    return;
+                }
+            });
         });
     }
 });
@@ -264,6 +275,10 @@ app.post('/weather', function(req, res, next) {
 app.get('/reset_coffee', function(req, res, next) {
     coffee_in_dispenser = [10, 10, 10, 10, 10, 10];
     res.send('Coffee amount in dispensers has been reset');
+});
+
+app.get('/coffee_status', function(req, res, next) {
+    res.send(coffee_in_dispenser);
 });
 
 function sendWarningEmail(coffee_number) {
