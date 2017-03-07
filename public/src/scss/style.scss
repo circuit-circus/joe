@@ -5,8 +5,8 @@
 }
 
 html {
-    background: #171717;
-    font-size: 14px;
+    background: #000;
+    font-size: 22px;
 }
 
 body {
@@ -63,7 +63,7 @@ main {
         background-color: #fff;
         color: #171717;
         margin-bottom: 2rem;
-        max-width: 480px;
+        max-width: 540px;
         opacity: 1;
         transform: translateX(0px);
         position: relative;
@@ -119,7 +119,7 @@ main {
 
     .chat-answer {
         margin-bottom: 2rem;
-        max-width: 480px;
+        max-width: 540px;
         opacity: 1;
         position: relative;
         border: 2px solid #fff;
@@ -139,8 +139,8 @@ main {
 
 .answer-container {
     width: 100%;
-    height: 10vh;
-    margin: 8vh 0 2vh;
+    height: 14vh;
+    margin: 4vh 0 2vh;
     display: flex;
     justify-content: space-between;
 

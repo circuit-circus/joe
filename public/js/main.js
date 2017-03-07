@@ -96,7 +96,6 @@ $(document).ready(function () {
  *
  */
 function startDots(callback) {
-    console.log('... wiggling');
     dotsTimer = setTimeout(function() {
         var d_clone = $('.chat-dots-template').clone();
         d_clone.removeClass('chat-dots-template').addClass('chat-dots');
@@ -111,7 +110,6 @@ function startDots(callback) {
  *
  */
 function removeDots() {
-    console.log('Remove dots');
     $('.chat-dots').remove();
 }
 
@@ -302,7 +300,7 @@ function getIcebreaker(callback) {
                 'What about a hot cup of [DRINK]?',
                 'Would you like a nice cup of [DRINK]?'
             ];
-            var no_name_options = ['buddy', 'friend', 'partner', 'hombre', 'kemosabe'];
+            var no_name_options = ['friend', 'partner'];
 
             var icebreaker_choices = {};
             var chosen_welcome_greeting;
@@ -471,7 +469,8 @@ function getIcebreaker(callback) {
 
                 var programme_greetings = [''];
 
-                console.log(programme_data);
+                // console.log('PROGRAMME DATA:');
+                // console.log(programme_data);
                 // Is the randomly chosen event about to start?
                 if(rightNow.isBetween(thisEventMoment, thisEventMoment.subtract(15, 'minutes'))) {
 
@@ -786,7 +785,6 @@ function insertQuestion(data, callback) {
  *
  */
 function scrollConversation() {
-    console.log('Scroll to conversation');
     var elem = $('.chat-buble').last();
     var newScrollpos = Math.abs( ($('.conversation-container')[0].scrollHeight - elem.offset().top) + elem.height());
     $('.conversation-container').animate({ scrollTop: newScrollpos }, 750);

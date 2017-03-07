@@ -108,6 +108,7 @@ io.on('connection', function(socket) {
 
     // Turn listening for visitors on / off
     socket.on('listenForVisitors', function(msg) {
+        console.log('LISTENING FOR VISITORS');
         listenForVisitors = msg;
     });
 });
@@ -120,7 +121,7 @@ app.get('/', function(req, res, next) {
 app.post('/drinks', function(req, res, next) {
     var data = req.body;
 
-    drinks = db.get().collection('coffee');
+    var drinks = db.get().collection('coffee');
 
     drinks.find(data).toArray(function(err, result) {
         if(err) {
@@ -141,9 +142,9 @@ app.post('/rfid/recieve', function(req, res, next) {
 
     if(!listenForVisitors) return;
 
-    tagsessions = db.get().collection('tagsessions');
-    guests = db.get().collection('guests');
-    visitor_data = db.get().collection('visitor_data');
+    var tagsessions = db.get().collection('tagsessions');
+    var guests = db.get().collection('guests');
+    var visitor_data = db.get().collection('visitor_data');
 
     tagsessions.find(tagsession_query).toArray(function(err, tagsession_result) {
         if(err) {
@@ -254,7 +255,7 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
     }
 
 
-    visitor_data = db.get().collection('visitor_data');
+    var visitor_data = db.get().collection('visitor_data');
     visitor_data.update(guest_query, update_query, update_settings, function(err, result) {
         if(err) {
             console.log('Could not update Last Drink');
