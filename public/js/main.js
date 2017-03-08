@@ -96,7 +96,6 @@ $(document).ready(function () {
  *
  */
 function startDots(callback) {
-    console.log('... wiggling');
     dotsTimer = setTimeout(function() {
         var d_clone = $('.chat-dots-template').clone();
         d_clone.removeClass('chat-dots-template').addClass('chat-dots');
@@ -111,7 +110,6 @@ function startDots(callback) {
  *
  */
 function removeDots() {
-    console.log('Remove dots');
     $('.chat-dots').remove();
 }
 
@@ -120,6 +118,8 @@ function removeDots() {
  *
  */
 function askForPerson() {
+    ga('send', 'event', 'Timeout', 'Are you still there?');
+
     var qData = {
         'phrase' : 'Are you still there?',
         'positive_answer' : 'Yup! I\'m just thinking',
@@ -205,6 +205,7 @@ function startWaiting() {
 
             setTimeout(function() {
                 if(!iceBreakerStarted) {
+                    ga('send', 'event', 'RFID Scan', 'Fail');
                     console.log('Found no RFID');
                     startIcebreaker();
                 }
@@ -216,6 +217,7 @@ function startWaiting() {
     socket.on('visitorCheckedIn', function (data) {
         if(!isServing && isListeningForVisitor) {
             console.log('Found visitor');
+            ga('send', 'event', 'RFID Scan', 'Success');
             current_visitor = data;
             startIcebreaker();
         }
@@ -225,6 +227,7 @@ function startWaiting() {
     socket.on('couldNotFindGuest', function (data) {
         if(!isServing && isListeningForVisitor) {
             console.log('Found RFID but no visitor');
+            ga('send', 'event', 'RFID Scan', 'Success, but not in db');
             startIcebreaker();
         }
     });
@@ -297,7 +300,7 @@ function getIcebreaker(callback) {
                 'What about a hot cup of [DRINK]?',
                 'Would you like a nice cup of [DRINK]?'
             ];
-            var no_name_options = ['buddy', 'friend', 'partner', 'hombre', 'kemosabe'];
+            var no_name_options = ['friend', 'partner'];
 
             var icebreaker_choices = {};
             var chosen_welcome_greeting;
@@ -308,8 +311,7 @@ function getIcebreaker(callback) {
             if(visitor_info.last_drink) elements.push('last_drink');
             if(!$.isEmptyObject(weather_data)) elements.push('weather');
             elements = shuffle(elements);
-            //var reactToElements = [elements[0], elements[1]];
-            var reactToElements = ['programme', elements[1]];
+            var reactToElements = [elements[0], elements[1]];
 
             // console.log('REACTING TO');
             // console.log(reactToElements);
@@ -467,7 +469,8 @@ function getIcebreaker(callback) {
 
                 var programme_greetings = [''];
 
-                console.log(programme_data);
+                // console.log('PROGRAMME DATA:');
+                // console.log(programme_data);
                 // Is the randomly chosen event about to start?
                 if(rightNow.isBetween(thisEventMoment, thisEventMoment.subtract(15, 'minutes'))) {
 
@@ -782,7 +785,6 @@ function insertQuestion(data, callback) {
  *
  */
 function scrollConversation() {
-    console.log('Scroll to conversation');
     var elem = $('.chat-buble').last();
     var newScrollpos = Math.abs( ($('.conversation-container')[0].scrollHeight - elem.offset().top) + elem.height());
     $('.conversation-container').animate({ scrollTop: newScrollpos }, 750);
@@ -843,9 +845,11 @@ function getConfirmation(chosenDrink) {
 
                 if(e.target.id === 'positive-answer') {
                     answer = 'pos';
+                    ga('send', 'event', 'Confirmation', 'Accepted');
                 }
                 if(e.target.id === 'negative-answer') {
                     answer = 'neg';
+                    ga('send', 'event', 'Confirmation', 'Rejected');
                 }
 
                 if(answer === 'pos') {
@@ -870,6 +874,8 @@ function finishJoe(chosenDrink) {
     var joeFinishStatement = 'Great! Here\'s your ' + chosenDrink.name;
     updateQuestionDOM(joeFinishStatement);
     $('.answer-container').addClass('hidden');
+
+    ga('send', 'event', 'Dispense', chosenDrink.name);
 
     sendToPath('post', '/dispense', chosenDrink, function (error, response) {
         console.log(response);

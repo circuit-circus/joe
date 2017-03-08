@@ -7,13 +7,14 @@ var bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 var mail_credentials = require('./mail_credentials.json');
 
+var drinks;
 var db = require('./db')
 var ObjectId = require('mongodb').ObjectID;
 
 var yrno = require('yr.no-forecast');
 
 var fs = require('fs');
-var programmes;
+
 // Number of coffee left in dispensers
 var coffee_inventory = [];
 
@@ -107,6 +108,7 @@ io.on('connection', function(socket) {
 
     // Turn listening for visitors on / off
     socket.on('listenForVisitors', function(msg) {
+        console.log('LISTENING FOR VISITORS');
         listenForVisitors = msg;
     });
 });
@@ -119,7 +121,7 @@ app.get('/', function(req, res, next) {
 app.post('/drinks', function(req, res, next) {
     var data = req.body;
 
-    drinks = db.get().collection('coffee');
+    var drinks = db.get().collection('coffee');
 
     drinks.find(data).toArray(function(err, result) {
         if(err) {
@@ -140,9 +142,9 @@ app.post('/rfid/recieve', function(req, res, next) {
 
     if(!listenForVisitors) return;
 
-    tagsessions = db.get().collection('tagsessions');
-    guests = db.get().collection('guests');
-    visitor_data = db.get().collection('visitor_data');
+    var tagsessions = db.get().collection('tagsessions');
+    var guests = db.get().collection('guests');
+    var visitor_data = db.get().collection('visitor_data');
 
     tagsessions.find(tagsession_query).toArray(function(err, tagsession_result) {
         if(err) {
@@ -158,7 +160,7 @@ app.post('/rfid/recieve', function(req, res, next) {
         }
 
         var guest_query = {
-            _id : new ObjectId(tagsession_result[0]._guest)
+            _id : tagsession_result[0]._guest
         }
 
         guests.find(guest_query).toArray(function(err, guest_result) {
@@ -175,7 +177,7 @@ app.post('/rfid/recieve', function(req, res, next) {
             guest_result[0].last_name = guest_last_name;
 
             var visitor_data_query = {
-                'guest_id' : new ObjectId(guest_result[0]._id)
+                'guest_id' : guest_result[0]._id
             }
 
             visitor_data.find(visitor_data_query).toArray(function(err, visitor_data_result) {
@@ -240,12 +242,12 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
     var data = req.body;
 
     var guest_query = {
-        'guest_id' : new ObjectId(data.visitor_id)
+        'guest_id' : data.visitor_id
     };
 
     var update_query = {
         'last_drink' : data.chosen_drink_number,
-        'guest_id' : new ObjectId(data.visitor_id)
+        'guest_id' : data.visitor_id
     };
 
     var update_settings = {
@@ -253,7 +255,7 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
     }
 
 
-    visitor_data = db.get().collection('visitor_data');
+    var visitor_data = db.get().collection('visitor_data');
     visitor_data.update(guest_query, update_query, update_settings, function(err, result) {
         if(err) {
             console.log('Could not update Last Drink');
@@ -326,7 +328,7 @@ function sendWarningEmail(coffee_number) {
     // setup email data with unicode symbols
     let mailOptions = {
         from: '"JOE" <hello@circuit-circus.com>', // sender address
-        to: 'nhoejholdt@gmail.com, hello@circuit-circus.com, foghhesperjhf@gmail.com, sandahlchristensen@gmail.com, vpermild@gmail.com', // list of receivers
+        to: 'nhoejholdt@gmail.com, hello@circuit-circus.com, foghjesperjhf@gmail.com, sandahlchristensen@gmail.com, vpermild@gmail.com', // list of receivers
         subject: 'Coffee ' + coffee_number + ' is running out!', // Subject line
         text: 'Hejjjj, vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '. KH Joe', // plain text body
         html: 'Hejjjj,<br> vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '.<br><br>KH Joe' // html body
