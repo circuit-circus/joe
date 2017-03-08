@@ -135,11 +135,13 @@ app.post('/drinks', function(req, res, next) {
 
 app.post('/rfid/recieve', function(req, res, next) {
 
-    var rfid = req.body;
+    var rfid = req.body.epc;
+    console.log(rfid);
     rfid = rfid.toLowerCase();
     rfid = rfid.replace(/\s+/g, '');
     // var tagsession_query = req.body;
     // if(!tagsession_query) return;
+
 
     res.send('is good');
 
@@ -149,12 +151,13 @@ app.post('/rfid/recieve', function(req, res, next) {
     var guests = db.get().collection('guests');
     var visitor_data = db.get().collection('visitor_data');
 
-    guests.find('_id' : rfid).toArray(function(err, guest_result) {
+    guests.find({'_id' : rfid}).toArray(function(err, guest_result) {
         if(err) {
             console.log('Could not find EPC in DB');
             console.log('Error: ' + err);
             return;
         }
+
 
         // Could not find guest
         if(guest_result.length <= 0) {
@@ -162,11 +165,14 @@ app.post('/rfid/recieve', function(req, res, next) {
             return;
         }
 
-        var guest_first_name = guest_result[0].name.substr(0, guest_result[0].name.indexOf(' '));
-        var guest_last_name = guest_result[0].name.substr(guest_result[0].name.indexOf(' ') + 1);
+        guest_result = guest_result[0]._guest;
+        console.log(guest_result);
 
-        guest_result[0].first_name = guest_first_name;
-        guest_result[0].last_name = guest_last_name;
+        var guest_first_name = guest_result.name.substr(0, guest_result.name.indexOf(' '));
+        var guest_last_name = guest_result.name.substr(guest_result.name.indexOf(' ') + 1);
+
+        guest_result.first_name = guest_first_name;
+        guest_result.last_name = guest_last_name;
 
 
         // var guest_query = {
@@ -174,22 +180,22 @@ app.post('/rfid/recieve', function(req, res, next) {
         // }
 
         var visitor_data_query = {
-            'guest_id' : guest_result[0]._id
+            'guest_id' : guest_result._id
         }
 
         visitor_data.find(visitor_data_query).toArray(function(err, visitor_data_result) {
             if(err) {
                 console.log('Could not find guest in visitor data');
                 console.log('Error: ' + err);
-                io.sockets.emit('visitorCheckedIn', guest_result[0]);
+                io.sockets.emit('visitorCheckedIn', guest_result);
                 return;
             }
 
             if(visitor_data_result.length > 0 && visitor_data_result[0].last_drink != null ) {
-                guest_result[0].last_drink = visitor_data_result[0].last_drink;
+                guest_result.last_drink = visitor_data_result[0].last_drink;
             }
 
-            io.sockets.emit('visitorCheckedIn', guest_result[0]);
+            io.sockets.emit('visitorCheckedIn', guest_result);
         });
 
         // guests.find(guest_query).toArray(function(err, guest_result) {
@@ -238,6 +244,7 @@ app.post('/dispense', function(req, res, next) {
                 }
             });
 
+            /*
             // Update dispenser inventory in DB
             var drinks = db.get().collection('coffee');
             drinks.update({'coffee_number' : coffee_number}, {'inventory_status' : coffee_inventory[coffee_number]}, function(err, result) {
@@ -247,6 +254,7 @@ app.post('/dispense', function(req, res, next) {
                     return;
                 }
             });
+            */
         });
     }
 });
