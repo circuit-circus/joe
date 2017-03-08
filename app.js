@@ -328,7 +328,7 @@ function sendWarningEmail(coffee_number) {
     // setup email data with unicode symbols
     let mailOptions = {
         from: '"JOE" <hello@circuit-circus.com>', // sender address
-        to: 'nhoejholdt@gmail.com, hello@circuit-circus.com, foghhesperjhf@gmail.com, sandahlchristensen@gmail.com, vpermild@gmail.com', // list of receivers
+        to: 'nhoejholdt@gmail.com, hello@circuit-circus.com, foghjesperjhf@gmail.com, sandahlchristensen@gmail.com, vpermild@gmail.com', // list of receivers
         subject: 'Coffee ' + coffee_number + ' is running out!', // Subject line
         text: 'Hejjjj, vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '. KH Joe', // plain text body
         html: 'Hejjjj,<br> vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '.<br><br>KH Joe' // html body
