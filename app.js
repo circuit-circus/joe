@@ -201,6 +201,8 @@ app.post('/rfid/recieve', function(req, res, next) {
 
 app.post('/dispense', function(req, res, next) {
     var data = req.body;
+    console.log('DISPENSING');
+    console.log(data);
     var coffee_number = data.coffee_number;
     var coffee_number_arduino = coffee_number.toString() + '\n';
 
@@ -227,7 +229,7 @@ app.post('/dispense', function(req, res, next) {
 
             // Update dispenser inventory in DB
             var drinks = db.get().collection('coffee');
-            drinks.update({'dispenser_number' : coffee_number}, {'inventory_status' : coffee_inventory[coffee_number]}, function(err, result) {
+            drinks.update({'coffee_number' : coffee_number}, {'inventory_status' : coffee_inventory[coffee_number]}, function(err, result) {
                 if(err) {
                     console.log('Could not update number of capsules left in dispenser');
                     console.log('Error: ' + err);
