@@ -160,7 +160,7 @@ app.post('/rfid/recieve', function(req, res, next) {
         }
 
         var guest_query = {
-            _id : new ObjectId(tagsession_result[0]._guest)
+            _id : tagsession_result[0]._guest
         }
 
         guests.find(guest_query).toArray(function(err, guest_result) {
@@ -177,7 +177,7 @@ app.post('/rfid/recieve', function(req, res, next) {
             guest_result[0].last_name = guest_last_name;
 
             var visitor_data_query = {
-                'guest_id' : new ObjectId(guest_result[0]._id)
+                'guest_id' : guest_result[0]._id
             }
 
             visitor_data.find(visitor_data_query).toArray(function(err, visitor_data_result) {
@@ -242,12 +242,12 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
     var data = req.body;
 
     var guest_query = {
-        'guest_id' : new ObjectId(data.visitor_id)
+        'guest_id' : data.visitor_id
     };
 
     var update_query = {
         'last_drink' : data.chosen_drink_number,
-        'guest_id' : new ObjectId(data.visitor_id)
+        'guest_id' : data.visitor_id
     };
 
     var update_settings = {
