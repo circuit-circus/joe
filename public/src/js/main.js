@@ -695,7 +695,7 @@ function eliminationRound() {
                         }
                         break;
                     case 3:
-                        choices.milk_froth = answer === 'pos' ? {$in: [1]} : {$in: [2]};
+                        choices.milk_froth = answer === 'pos' ? {$in: [2]} : {$in: [1]};
                         break;
                 }
 
