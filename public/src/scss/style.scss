@@ -69,15 +69,15 @@ main {
         position: relative;
         align-self: flex-start;
 
-        &:after {
-            content: '';
-            border-style: solid;
-            border-width: 5px 8px 5px 0;
-            border-color: transparent #fff transparent transparent;
-            position: absolute;
-            left: -8px;
-            top: calc(50% - 6px);
-        }
+        // &:after {
+        //     content: '';
+        //     border-style: solid;
+        //     border-width: 5px 8px 5px 0;
+        //     border-color: transparent #fff transparent transparent;
+        //     position: absolute;
+        //     left: -8px;
+        //     top: calc(50% - 6px);
+        // }
     }
 
     .dot {
@@ -137,6 +137,50 @@ main {
     }
 }
 
+.conversation-container .waiting-statement {
+    display: none;
+}
+
+.waiting-for-guest {
+
+    .conversation-container {
+        align-items: center;
+        justify-content: center;
+    }
+    .waiting-statement {
+        align-self: auto;
+        transform: scale(1.3);
+        display: block;
+
+        animation-name: scale-waiting;
+        animation-iteration-count: infinite;
+        animation-duration: 2500ms;
+
+        // animation-duration: 1800ms;
+        // animation-iteration-count: infinite;
+        // animation-name: loading-dots;
+        // animation-timing-function: ease-in-out;
+    }
+}
+
+@keyframes scale-waiting {
+    0% {
+        transform: scale(1.3);
+    }
+
+    10% {
+        transform: scale(1.4);
+    }
+
+    20% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1.3);
+    }
+}
+
 .answer-container {
     width: 100%;
     height: 14vh;
@@ -151,8 +195,15 @@ main {
     .answer-option {
         flex: 1;
         border: 2px dotted #fff;
-        margin: 0 1rem;
         //align-self: flex-end;
+
+        &:first-of-type {
+            margin-right: 1rem;
+        }
+
+        &:last-of-type {
+            margin-left: 1rem;
+        }
     }
 }
 

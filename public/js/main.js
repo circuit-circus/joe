@@ -181,21 +181,27 @@ function resumeConversation(data) {
  *
  */
 function startWaiting() {
+
+    $('body').addClass('waiting-for-guest');
+
     var introJoeGreetings = [
-        'Hi there! I\'m Joe, your personal barista. Press a button to get started!',
-        'Hey! My name is Joe. I\'m your personal barista. Press a button, so we can get started!',
-        'Hi, how are you? I\'m your personal barista, Joe. Press one of the buttons and I\'ll help you find the perfect coffee.'
+        'Hi there! I\'m Joe, your personal barista. Step inside and press a button to get started!',
+        'Hey! My name is Joe. I\'m your personal barista. Step inside and press a button, so we can get started!',
+        'Hi, how are you? I\'m your personal barista, Joe. Step inside and press one of the buttons and I\'ll help you find the perfect coffee.'
     ];
     var introJoe = {
         'phrase' : introJoeGreetings[Math.floor(Math.random()*introJoeGreetings.length)]
     };
-    updateQuestionDOM(introJoe.phrase);
+    updateQuestionDOM(introJoe.phrase, true);
+    $('body').addClass('waiting-for-guest');
     $('.answer-container').addClass('hidden');
 
     isWaiting = true;
     $('body').off('click', '.waiting-answer');
     $('body').on('click', '.waiting-answer', function(e) {
         if(isWaiting) {
+            $('body').removeClass('waiting-for-guest');
+
             isListeningForVisitor = true;
             isWaiting = false;
 
@@ -768,7 +774,12 @@ function insertQuestion(data, callback) {
  * Add a new question to the conversation and scroll down to it
  *
  */
- function updateQuestionDOM(text) {
+ function updateQuestionDOM(text, is_first) {
+
+    if(is_first === undefined) {
+        is_first = false;
+    }
+
     var q_clone = $('.chat-question-template').clone();
     q_clone.text(text);
     $('.conversation-container').append(q_clone);
@@ -777,6 +788,9 @@ function insertQuestion(data, callback) {
 
     setTimeout(function() {
         q_clone.removeClass('chat-question-template').addClass('chat-question');
+        if(is_first) {
+            q_clone.addClass('waiting-statement');
+        }
     }, 1);
  }
 
