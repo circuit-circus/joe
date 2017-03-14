@@ -888,29 +888,45 @@ function getConfirmation(chosenDrink) {
  *
  */
 function finishJoe(chosenDrink) {
-    var joeFinishStatement = 'Great! Here\'s your ' + chosenDrink.name;
-    updateQuestionDOM(joeFinishStatement);
-    $('.answer-container').addClass('hidden');
+    var joeFinishStatements = [
+        'Great! Here\'s your ' + chosenDrink.name,
+        'Alright! Your ' + chosenDrink.name + ' should be ready to grab. Enjoy!',
+        'Neat! I\'ve dispensed your' + chosenDrink.name + '. Bon appetit!'
+    ];
+    var joeFinishStatement = joeFinishStatements[Math.floor(Math.random()*joeFinishStatements.length)];
+    var joeDelay = 7500;
 
-    ga('send', 'event', 'Dispense', chosenDrink.name);
-
-    sendToPath('post', '/dispense', chosenDrink, function (error, response) {
-        console.log(response);
-    });
-
-    // If we have visitor info, update the database with their choice
-    if(current_visitor !== null) {
-        var updateVisitorLastDrinkData = {
-            visitor_id : current_visitor._id,
-            chosen_drink_number : chosenDrink.coffee_number
-        }
-
-        sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
-
-        });
+    if(chosenDrink.name === 'Cappuccino') {
+        joeFinishStatement = 'Deal! You get two capsules for your ' + chosenDrink.name + '. One for the milk part, one for the coffee. I recommend starting out with the milk. Enjoy!'
+        joeDelay = 10000;
     }
 
-    restartJoe(2000);
+    startDots(function() {
+        removeDots();
+
+        updateQuestionDOM(joeFinishStatement);
+        $('.answer-container').addClass('hidden');
+
+        ga('send', 'event', 'Dispense', chosenDrink.name);
+
+        sendToPath('post', '/dispense', chosenDrink, function (error, response) {
+            console.log(response);
+        });
+
+        // If we have visitor info, update the database with their choice
+        if(current_visitor !== null) {
+            var updateVisitorLastDrinkData = {
+                visitor_id : current_visitor._id,
+                chosen_drink_number : chosenDrink.coffee_number
+            }
+
+            sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
+
+            });
+        }
+
+        restartJoe(joeDelay);
+    });
 }
 
 function restartJoe(timerMs) {
