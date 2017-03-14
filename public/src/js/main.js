@@ -97,6 +97,9 @@ $(document).ready(function () {
  */
 function startDots(callback) {
     dotsTimer = setTimeout(function() {
+        // Remove any duplicate dots
+        removeDots();
+        
         var d_clone = $('.chat-dots-template').clone();
         d_clone.removeClass('chat-dots-template').addClass('chat-dots');
         $('.conversation-container').append(d_clone);
