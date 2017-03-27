@@ -21,10 +21,38 @@ main {
     margin: 0 auto;
 }
 
+$arrowsize: 8px;
 .chat-buble {
     padding: 1rem;
     vertical-align: top;
     border-radius: 5px;
+    position: relative;
+}
+
+.chat-buble::before {
+    border-color: #fff;
+    border-top: $arrowsize solid transparent;
+    border-bottom: $arrowsize solid transparent; 
+  
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: calc(50% - #{$arrowsize});
+    width: 0;
+}
+
+.chat-buble.chat-question:not(.waiting-statement)::before {
+    border-right: $arrowsize solid #fff;
+    left: -$arrowsize;
+}
+
+.chat-buble.chat-answer::before {
+    border-left: $arrowsize solid #fff;
+    right: -$arrowsize;
+}
+
+.chat-buble.chat-dots::before {
+    border-width: 0 0 0 0;
 }
 
 .conversation-container {
@@ -62,6 +90,7 @@ main {
     .chat-question {
         background-color: #fff;
         color: #171717;
+        left: $arrowsize;
         margin-bottom: 2rem;
         max-width: 540px;
         opacity: 1;
@@ -118,6 +147,7 @@ main {
     }
 
     .chat-answer {
+        right: $arrowsize;
         margin-bottom: 2rem;
         max-width: 540px;
         opacity: 1;
@@ -125,7 +155,7 @@ main {
         border: 2px solid #fff;
         align-self: flex-end;
 
-        &:before {
+        /*&:before {
             content: '';
             border-style: solid;
             border-width: 5px 0 5px 8px;
@@ -133,7 +163,7 @@ main {
             position: absolute;
             right: -8px;
             top: calc(50% - 6px);
-        }
+        }*/
     }
 }
 
@@ -156,11 +186,6 @@ main {
         animation-iteration-count: infinite;
         animation-timing-function: ease-in-out;
         animation-duration: 1500ms;
-
-        // animation-duration: 1800ms;
-        // animation-iteration-count: infinite;
-        // animation-name: loading-dots;
-        // animation-timing-function: ease-in-out;
     }
 }
 
@@ -275,7 +300,7 @@ main {
 
 
 
-
+/*
 
 .chat-container {
     position: absolute;
@@ -314,7 +339,7 @@ $arrowsize: 5px;
 }
 
 .chat__left::after {
-    border-right: 5px solid #fff;
+    //border-right: 5px solid #fff;
     left: -#{$arrowsize};
     transition: opacity 500ms;
     top: 50%;
@@ -356,4 +381,4 @@ $arrowsize: 5px;
     padding: 1rem;
     transition: opacity 500ms;
     max-width: 25vw;
-}
+}*/
