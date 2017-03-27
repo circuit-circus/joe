@@ -315,15 +315,29 @@ function getIcebreaker(callback) {
             var chosen_welcome_greeting;
             var chosen_drink_greeting;
 
+
+            // Check if weather is relevant
+            var weather_elements = [];
+            if(!$.isEmptyObject(weather_data)) {
+                if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
+                if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
+                if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
+                if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
+                if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
+            }
+            var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
+            // console.log('CHOSEN WEATHER ELEMENT');
+            // console.log(chosen_weather_element);
+
             // Choose which elements to react to and suggest from
             var elements = ['programme', 'time'];
             if(visitor_info.last_drink) elements.push('last_drink');
-            if(!$.isEmptyObject(weather_data)) elements.push('weather');
+            if(!$.isEmptyObject(weather_data) && chosen_weather_element !== undefined) elements.push('weather');
             elements = shuffle(elements);
             var reactToElements = [elements[0], elements[1]];
 
-            // console.log('REACTING TO');
-            // console.log(reactToElements);
+            console.log('REACTING TO');
+            console.log(reactToElements);
 
             /* TIME */
             var currentTime = date.getHours();
@@ -380,24 +394,13 @@ function getIcebreaker(callback) {
             // console.log(welcome_greetings);
             chosen_welcome_greeting = welcome_greetings[Math.floor(Math.random()*welcome_greetings.length)];
 
+
             /* WEATHER */
-            var weather_elements = [];
-            if(!$.isEmptyObject(weather_data)) {
-                if(parseInt(weather_data.cloudiness) > 75) weather_elements.push('cloudy');
-                if(parseInt(weather_data.fog) > 55) weather_elements.push('foggy');
-                if(parseInt(weather_data.rain) > 5) weather_elements.push('rainy');
-                if(parseInt(weather_data.temperature) < 5) weather_elements.push('cold');
-                if(parseInt(weather_data.windSpeed.beaufort) > 5) weather_elements.push('windy');
-            }
-            var chosen_weather_element = weather_elements[Math.floor(Math.random()*weather_elements.length)];
-
-            // console.log('CHOSEN WEATHER ELEMENT');
-            // console.log(chosen_weather_element);
-
             // console.log('WEAHTER');
             // console.log(weather_data);
 
             if(reactToElements[0] === 'weather' || reactToElements[1] === 'weather') {
+                console.log(chosen_weather_element);
                 if(chosen_weather_element === 'cloudy') {
                     weather_greetings = [
                         'Woah, it\'s looking cloudy!',
