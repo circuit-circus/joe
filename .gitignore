@@ -11,5 +11,6 @@ npm-debug.log
 Dockerfile
 docker-compose.yml
 
+public/js/main.js
 public/js/main-min.js
 mail_credentials.json
