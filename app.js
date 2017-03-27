@@ -43,14 +43,14 @@ db.connect(url, function(err) {
 
     // Get inventory status
     var drinks = db.get().collection('coffee');
-    drinks.find({}).toArray(function(err, result) {
+    drinks.find({}).sort({'coffee_number' : 1}).toArray(function(err, result) {
         if(err) {
             console.log('Could not find coffee in DB');
             console.log('Error: ' + err);
             return;
         }
         result.forEach(function(elem) {
-            coffee_inventory.push(elem.inventory_status);
+            coffee_inventory.push(elem);
         });
     });
 });
@@ -203,9 +203,9 @@ app.post('/dispense', function(req, res, next) {
             }
 
             // Update number of coffees left in dispenser
-            coffee_inventory[coffee_number] = coffee_inventory[coffee_number] - 1;
-            if(coffee_inventory[coffee_number] <= 2) {
-                sendWarningEmail(coffee_number);
+            coffee_inventory[coffee_number].inventory_status -= 1;
+            if(coffee_inventory[coffee_number].inventory_status <= 2) {
+                sendWarningEmail(coffee_inventory[coffee_number]);
             }
 
             res.send('okk');
@@ -216,18 +216,19 @@ app.post('/dispense', function(req, res, next) {
                 }
             });
 
-            /*
             // Update dispenser inventory in DB
             var drinks = db.get().collection('coffee');
-            drinks.update({'coffee_number' : coffee_number}, {'inventory_status' : coffee_inventory[coffee_number]}, function(err, result) {
+
+            drinks.update({'coffee_number' : coffee_number}, { $set : {'inventory_status' : coffee_inventory[coffee_number].inventory_status}}, function(err, result) {
                 if(err) {
                     console.log('Could not update number of capsules left in dispenser');
                     console.log('Error: ' + err);
                     return;
                 }
             });
-            */
         });
+    } else {
+        console.log('SP is not oven');
     }
 });
 
@@ -289,7 +290,9 @@ app.post('/weather', function(req, res, next) {
 });
 
 app.get('/reset_inventory', function(req, res, next) {
-    coffee_inventory = [9, 9, 9, 9, 9, 9];
+    coffee_inventory.forEach(function(elem) {
+        elem.inventory_status = 9;
+    });
     var drinks = db.get().collection('coffee');
     drinks.updateMany({}, {$set: {'inventory_status' : 9}}, function(err, result) {
         if(err) {
@@ -314,14 +317,14 @@ app.get('/inventory_status', function(req, res, next) {
     });
 });
 
-function sendWarningEmail(coffee_number) {
+function sendWarningEmail(coffee_elem) {
     // setup email data with unicode symbols
     let mailOptions = {
         from: '"JOE" <hello@circuit-circus.com>', // sender address
         to: 'nhoejholdt@gmail.com, hello@circuit-circus.com, foghjesperjhf@gmail.com, sandahlchristensen@gmail.com, vpermild@gmail.com', // list of receivers
-        subject: 'Coffee ' + coffee_number + ' is running out!', // Subject line
-        text: 'Hejjjj, vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '. KH Joe', // plain text body
-        html: 'Hejjjj,<br> vi er ved at løbe tør for kaffe i dispenser nummer ' + coffee_number + '.<br><br>KH Joe' // html body
+        subject: coffee_elem.name + ' is running out!', // Subject line
+        text: 'Hejjjj, vi er ved at løbe tør for ' + coffee_elem.name +' i dispenser nummer ' + coffee_elem.dispenser_number + '. KH Joe', // plain text body
+        html: 'Hejjjj, vi er ved at løbe tør for ' + coffee_elem.name +' i dispenser nummer ' + coffee_elem.dispenser_number + '.<br><br>KH Joe' // html body
     };
 
     // send mail with defined transport object
