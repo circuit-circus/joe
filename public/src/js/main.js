@@ -372,7 +372,10 @@ function getIcebreaker(callback) {
                 if(reactToElements[0] === 'time') {
                     icebreaker_choices.milk = {$in: [1]};
                     drink_greetings = [
-                        'How about a smooth cup of [DRINK]?',
+                        'Fun fact! According to legend, Ethiopian shepherds first realized the caffeinating effects of coffee when they noticed their goats started “dancing” after eating coffee berries. Anyway, how about a smooth cup of [DRINK]?',
+                        'Here\'s a fun fact! The first ever webcam was built by scientists at Cambridge because they wanted to keep an eye on how much coffee was left in their machine! Anyway, how about a smooth cup of [DRINK]?',
+                        'Did you know that Finland consumes the most coffee per capita in the world? The Finns drink an average of 2.64 cups a day! I\'m sure you can beat that easily though, how about a cup of [DRINK]?',
+                        'Did you know that coffee plants can live up to 200 years? That\'s two whole centuries! Would you like a nice cup of [DRINK]? It might come from a plant way older than you!',
                         'Would you like an afternoon [DRINK]?'
                     ];
                 }
