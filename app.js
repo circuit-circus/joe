@@ -35,7 +35,6 @@ db.connect(url, function(err) {
         process.exit(1);
         return;
     }
-
     console.log('Connected to database');
 
     http.listen(5000, function() {
@@ -98,7 +97,6 @@ let transporter = nodemailer.createTransport({
 
 // Listen for Arduino buttonpresses
 io.on('connection', function(socket) {
-
     if(sp !== undefined && sp.isOpen()) {
         sp.on('data', function(input) {
             console.log(input);
@@ -134,20 +132,15 @@ app.post('/drinks', function(req, res, next) {
 });
 
 app.post('/rfid/recieve', function(req, res, next) {
-
     var rfid = req.body.epc;
     console.log(rfid);
     rfid = rfid.toLowerCase();
     rfid = rfid.replace(/\s+/g, '');
-    // var tagsession_query = req.body;
-    // if(!tagsession_query) return;
-
 
     res.send('is good');
 
     if(!listenForVisitors) return;
 
-    //var tagsessions = db.get().collection('tagsessions');
     var guests = db.get().collection('guests');
     var visitor_data = db.get().collection('visitor_data');
 
@@ -157,7 +150,6 @@ app.post('/rfid/recieve', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
-
 
         // Could not find guest
         if(guest_result.length <= 0) {
@@ -173,11 +165,6 @@ app.post('/rfid/recieve', function(req, res, next) {
 
         guest_result.first_name = guest_first_name;
         guest_result.last_name = guest_last_name;
-
-
-        // var guest_query = {
-        //     _id : tagsession_result[0]._guest
-        // }
 
         var visitor_data_query = {
             'guest_id' : guest_result._id
@@ -197,21 +184,6 @@ app.post('/rfid/recieve', function(req, res, next) {
 
             io.sockets.emit('visitorCheckedIn', guest_result);
         });
-
-        // guests.find(guest_query).toArray(function(err, guest_result) {
-        //     if(err) {
-        //         console.log('Could not find Guest in DB');
-        //         console.log('Error: ' + err);
-        //         return;
-        //     }
-
-        //     var guest_first_name = guest_result[0].name.substr(0, guest_result[0].name.indexOf(' '));
-        //     var guest_last_name = guest_result[0].name.substr(guest_result[0].name.indexOf(' ') + 1);
-
-        //     guest_result[0].first_name = guest_first_name;
-        //     guest_result[0].last_name = guest_last_name;
-
-        // });
 
     });
 });
@@ -275,7 +247,6 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
         upsert: true
     }
 
-
     var visitor_data = db.get().collection('visitor_data');
     visitor_data.update(guest_query, update_query, update_settings, function(err, result) {
         if(err) {
@@ -294,7 +265,6 @@ app.get('/programme', function(req, res, next) {
 });
 
 app.post('/weather', function(req, res, next) {
-
     var currTime = new Date();
     yrno.getWeather({
         lat: req.body.latitude,
@@ -332,7 +302,6 @@ app.get('/reset_inventory', function(req, res, next) {
 });
 
 app.get('/inventory_status', function(req, res, next) {
-
     var drinks = db.get().collection('coffee');
 
     drinks.find({}).toArray(function(err, result) {
@@ -362,6 +331,4 @@ function sendWarningEmail(coffee_number) {
         }
         console.log('Message %s sent: %s', info.messageId, info.response);
     });
-
 }
-
