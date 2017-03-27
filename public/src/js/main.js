@@ -18,8 +18,6 @@ var weather_data = {};
 
 var date = new Date();
 
-var bannedDrinkArray = [];
-
 var choices = {};
 
 var current_visitor = null;
@@ -81,8 +79,8 @@ $(document).ready(function () {
         }
     });
 
-    $('body').off('click', '.lol');
-    $('body').on('click', '.lol', function() {
+    $('body').off('click', '.button-simulator');
+    $('body').on('click', '.button-simulator', function() {
         $('#positive-answer').click();
     });
 
@@ -99,10 +97,10 @@ function startDots(callback) {
     dotsTimer = setTimeout(function() {
         // Remove any duplicate dots
         removeDots();
-        
-        var d_clone = $('.chat-dots-template').clone();
-        d_clone.removeClass('chat-dots-template').addClass('chat-dots');
-        $('.conversation-container').append(d_clone);
+
+        var dot_clone = $('.chat-dots-template').clone();
+        dot_clone.removeClass('chat-dots-template').addClass('chat-dots');
+        $('.conversation-container').append(dot_clone);
         scrollConversation();
         callback();
     }, (Math.random() * 400) + 400);
@@ -131,7 +129,6 @@ function askForPerson() {
     shouldSaveRecentConversation = false;
 
     startDots(function() {
-
         insertQuestion(qData, function() {
             $('.answer-option').removeClass(recentClass);
 
@@ -240,7 +237,6 @@ function startWaiting() {
             startIcebreaker();
         }
     });
-
 }
 
 /*
@@ -249,7 +245,6 @@ function startWaiting() {
  * @param visitorData (Object) OPTIONAL. The visitor data from the RFID
  */
 function startIcebreaker() {
-
     removeDots();
 
     isListeningForVisitor = false;
@@ -277,7 +272,6 @@ function startIcebreaker() {
                             finishJoe(thisIcebreaker);
                         }
                         if(e.target.id === 'negative-answer') {
-                            bannedDrinkArray.push(thisIcebreaker._id);
                             eliminationRound();
                         }
                     }
@@ -360,8 +354,7 @@ function getIcebreaker(callback) {
                     'Hi there [VISITOR]!',
                     'Hello [VISITOR], how are you?',
                     'Hi [VISITOR]! So nice to see you.',
-                    'Welcome [VISITOR]!',
-                    'Howdy [VISITOR]!'
+                    'Welcome [VISITOR]!'
                 ];
 
             } else if (currentTime >= 14 && currentTime < 18) {
@@ -564,10 +557,8 @@ function getIcebreaker(callback) {
 }
 
 function parseEventSpeaker(speaker) {
-    console.log(speaker);
     if(speaker.indexOf('/') !== -1) {
         speaker = speaker.split(' / ');
-        console.log(speaker);
     }
     else {
         speaker = [speaker];
@@ -580,14 +571,6 @@ function parseTime(thisTime) {
     var minute = thisTime.substring(3, 5);
     var hourInt = parseInt(hour);
     var minuteInt = parseInt(minute);
-
-    /*var timeStr = "";
-    if(hourInt < 12) {
-        timeStr = hour + ":" + minute + "AM";
-    }
-    else {
-        timeStr = (hourInt - 12) + ":" + minute + "PM";
-    }*/
 
     var thisMoment = moment();
     thisMoment.hour(hourInt);
@@ -672,10 +655,6 @@ function getWithTheProgramme(location_data, callback) {
  *
  */
 function eliminationRound() {
-    /*if(questionCounter >= question_data.length) {
-        finishJoe();
-        return;
-    }*/
     var question = question_data[questionCounter];
     startDots(function() {
         insertQuestion(question, function() {
@@ -824,11 +803,6 @@ function scrollConversation() {
  *
  */
 function getAvailableDrinks(drink_query, callback) {
-    // drink_query._id = {
-    //     $nin: bannedDrinkArray
-    // }
-
-    //console.log(drink_query);
 
     sendToPath('post', '/drinks', drink_query, function (error, response) {
         console.log(response);
@@ -890,7 +864,6 @@ function getConfirmation(chosenDrink) {
                 }
                 else {
                     choices = {};
-                    bannedDrinkArray.push(chosenDrink._id)
                     questionCounter = 0;
                     eliminationRound();
                 }
@@ -947,7 +920,6 @@ function finishJoe(chosenDrink) {
 
 function restartJoe(timerMs) {
     choices = {};
-    bannedDrinkArray = [];
     isServing = false;
     questionCounter = 0;
     current_visitor = null;
