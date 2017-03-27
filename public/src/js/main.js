@@ -841,10 +841,14 @@ function getConfirmation(chosenDrink) {
 
     // Construct first suggestion obj
     var confirmation_phrases = [
-        'May I suggest a nice cup of ' + chosenDrink.name + ' then?',
-        'Great! What do you think about getting a ' + chosenDrink.name + ' then?',
-        'Great choices! I would suggest a cup of ' + chosenDrink.name + ' for you!'
+        'May I suggest a nice cup of ' + chosenDrink.name + ' then? ',
+        'Great! What do you think about getting a ' + chosenDrink.name + ' then? ',
+        'Great choices! I would suggest a cup of ' + chosenDrink.name + ' for you! '
     ];
+
+    var chosen_confirmation_phrase = confirmation_phrases[Math.floor(Math.random()*confirmation_phrases.length)];
+    chosen_confirmation_phrase += chosenDrink.description;
+
     var confirmation_positive_answers = [
         'I\'d love one of those! Hook me up with a cup of ' + chosenDrink.name + '!',
         chosenDrink.name + ' sounds delicious. I\'d love one of those!'
@@ -854,7 +858,7 @@ function getConfirmation(chosenDrink) {
         'I don\'t feel like one of those at the moment, can we start over?'
     ];
     var qData = {
-        'phrase' : confirmation_phrases[Math.floor(Math.random()*confirmation_phrases.length)],
+        'phrase' : chosen_confirmation_phrase,
         'positive_answer' : confirmation_positive_answers[Math.floor(Math.random()*confirmation_positive_answers.length)],
         'negative_answer' : confirmation_negative_answers[Math.floor(Math.random()*confirmation_negative_answers.length)]
     }
