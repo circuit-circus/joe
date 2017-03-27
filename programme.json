@@ -235,21 +235,322 @@
         {
             "wednesday" : [
                 {
-                    "title": "Coffee & Croissant / TechGarden opens",
-                    "location": "Tech Garden",
-                    "time": {
-                        "start_time": "08:00",
-                        "end_time": "08:45"
+                    "title":"Coffee & Croissant / TechGarden opens",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"08:00",
+                        "end_time":"08:45"
+                    }
+                },
+                {
+                    "title":"Welcome",
+                    "location":"Main Stage",
+                    "speaker":"Simone Skoog / GroupM",
+                    "time":{
+                        "start_time":"08:45",
+                        "end_time":"09:00"
+                    }
+                },
+                {
+                    "title":"Machine Learning as Design Tool",
+                    "location":"Main Stage",
+                    "speaker":"Rebecca Fiebrink",
+                    "time":{
+                        "start_time":"09:00",
+                        "end_time":"09:40"
+                    }
+                },
+                {
+                    "title":"Digital Signage in Retail – ICA One of the Leading Examples",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Fredrik Holmvik / Visual Art",
+                    "time":{
+                        "start_time":"09:55",
+                        "end_time":"10:25"
+                    }
+                },
+                {
+                    "title":"Are you paying attention to attention?",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Ali Farokhian / Tobii Pro",
+                    "time":{
+                        "start_time":"09:55",
+                        "end_time":"10:25"
+                    }
+                },
+                {
+                    "title":"Winning the Data Game: Executing Data Strategy in a Multi-Partner Landscape",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Ioana Norgren / Adform",
+                    "time":{
+                        "start_time":"09:55",
+                        "end_time":"10:25"
+                    }
+                },
+                {
+                    "title":"Marketing In the Age of Assistance",
+                    "location":"Main Stage",
+                    "speaker":"Johan Eriksson / Google, Zineb Ait Bahajji / Google",
+                    "time":{
+                        "start_time":"10:40",
+                        "end_time":"11:20"
+                    }
+                },
+                {
+                    "title":"How To Use VR For Editorial Storytelling",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Martin Jönsson / Dagens Nyheter",
+                    "time":{
+                        "start_time":"11:35",
+                        "end_time":"12:05"
+                    }
+                },
+                {
+                    "title":"Maximize the effect of Programmatic through Data and Creatives",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Daniel Rytterström / Google",
+                    "time":{
+                        "start_time":"11:35",
+                        "end_time":"12:05"
+                    }
+                },
+                {
+                    "title":"Flaming Cheez Doodles – Great Television Pays Off",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Jenny Strömstedt / TV4, Mathias Berg / TV4",
+                    "time":{
+                        "start_time":"11:35",
+                        "end_time":"12:05"
+                    }
+                },
+                {
+                    "title":"Lunch Break",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"12:05",
+                        "end_time":"12:50"
+                    }
+                },
+                {
+                    "title":"Welcome Back",
+                    "location":"Main Stage",
+                    "speaker":"Coming",
+                    "time":{
+                        "start_time":"12:50",
+                        "end_time":"12:55"
+                    }
+                },
+                {
+                    "title":"VR, AR and the Intersection of Print and Digital",
+                    "location":"Main Stage",
+                    "speaker":"Molly Swenson / RYOT",
+                    "time":{
+                        "start_time":"12:55",
+                        "end_time":"13:35"
+                    }
+                },
+                {
+                    "title":"Silos vs. Ecosystems",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Jacob Lachmann / Audience Project",
+                    "time":{
+                        "start_time":"13:35",
+                        "end_time":"14:05"
+                    }
+                },
+                {
+                    "title":"Culture Eats Strategy for Breakfast: How to Futureproof Your Business",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Dan Bernardo / Unruly",
+                    "time":{
+                        "start_time":"13:35",
+                        "end_time":"14:05"
+                    }
+                },
+                {
+                    "title":"Mixed Reality and Virtual Reality",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Ali Zareiee / Adapa360, Jo Jørgen Stordal / Point Media",
+                    "time":{
+                        "start_time":"13:35",
+                        "end_time":"14:05"
+                    }
+                },
+                {
+                    "title":"How increased technological capacity impacts our ability to make the right decisions?",
+                    "location":"Main Stage",
+                    "speaker":"Leigh Thomas / Facebook",
+                    "time":{
+                        "start_time":"14:20",
+                        "end_time":"15:00"
+                    }
+                },
+                {
+                    "title":"Using Data for Branded Content in a World of Distorted Realities",
+                    "location":"Main Stage",
+                    "speaker":"Kodi Foster / Viacom",
+                    "time":{
+                        "start_time":"15:05",
+                        "end_time":"15:45"
+                    }
+                },
+                {
+                    "title":"Recap Day 1",
+                    "location":"Main Stage",
+                    "speaker":"Simone Skoog / GroupM",
+                    "time":{
+                        "start_time":"15:45",
+                        "end_time":"16:00"
+                    }
+                },
+                {
+                    "title":"Mingling",
+                    "time":{
+                        "start_time":"16:00",
+                        "end_time":"19:30"
                     }
                 }
             ],
             "thursday" : [
                 {
-                    "title": "Coffee & Croissants/Tech garden opens",
-                    "location": "Tech Garden",
-                    "time": {
-                        "start_time": "08:00",
-                        "end_time": "08:45"
+                    "title":"Coffee & Croissant / TechGarden Opens",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"08:00",
+                        "end_time":"08:55"
+                    }
+                },
+                {
+                    "title":"Welcome",
+                    "location":"Main Stage",
+                    "speaker":"Simone Skoog / GroupM",
+                    "time":{
+                        "start_time":"08:55",
+                        "end_time":"09:00"
+                    }
+                },
+                {
+                    "title":"Print as the Next Digital Frontier",
+                    "location":"Main Stage",
+                    "speaker":"Dr. Kate Stone / Novalia",
+                    "time":{
+                        "start_time":"09:00",
+                        "end_time":"09:40"
+                    }
+                },
+                {
+                    "title":"Schibsted Future Report 2017",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Lena K Samuelsson / Schibsted",
+                    "time":{
+                        "start_time":"09:50",
+                        "end_time":"10:20"
+                    }
+                },
+                {
+                    "title":"Launching consumer hardware like a start-up",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Mats Horn / Tinitell",
+                    "time":{
+                        "start_time":"09:50",
+                        "end_time":"10:20"
+                    }
+                },
+                {
+                    "title":"Reinventing Entertainment for a Global Community",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Jenny Hermanson / Spotify",
+                    "time":{
+                        "start_time":"09:50",
+                        "end_time":"10:20"
+                    }
+                },
+                {
+                    "title":"Media on the Blockchain",
+                    "location":"Main Stage",
+                    "speaker":"Nic Hodges / News Corp",
+                    "time":{
+                        "start_time":"10:30",
+                        "end_time":"11:10"
+                    }
+                },
+                {
+                    "title":"Sandwich and Coffe Break",
+                    "time":{
+                        "start_time":"11:10",
+                        "end_time":"11:20"
+                    }
+                },
+                {
+                    "title":"Will Today’s iPhone Be Tomorrow’s Media Planner?",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Richard Lloyd / Maxus Global",
+                    "time":{
+                        "start_time":"11:20",
+                        "end_time":"11:50"
+                    }
+                },
+                {
+                    "title":"“Winning in Asia – How to approach Asian markets from the Nordics”",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Jakob Stigler / AOL",
+                    "time":{
+                        "start_time":"11:20",
+                        "end_time":"11:50"
+                    }
+                },
+                {
+                    "title":"How to MATE Passion with Crowdfunding – and Raise Millions",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Christan Adel Michael / MATE.bike, Julie Kronstrøm / MATE.bike",
+                    "time":{
+                        "start_time":"11:20",
+                        "end_time":"11:50"
+                    }
+                },
+                {
+                    "title":"Unlocking Growth With New Digital Eco Systems",
+                    "location":"Stage 1 (Riddarsalen)",
+                    "speaker":"Johan Öberg / Telia IoT",
+                    "time":{
+                        "start_time":"12:00",
+                        "end_time":"12:30"
+                    }
+                },
+                {
+                    "title":"Breakout Session by Pavegen",
+                    "location":"Stage 2 (Galleriet)",
+                    "speaker":"Laurence Kemball-Cook / Pavegen",
+                    "time":{
+                        "start_time":"12:00",
+                        "end_time":"12:30"
+                    }
+                },
+                {
+                    "title":"Get Ready for GDPR and Create a Competitive Advantage!",
+                    "location":"Stage 3 (Mässhallen)",
+                    "speaker":"Ida Häggström / Synch",
+                    "time":{
+                        "start_time":"12:00",
+                        "end_time":"12:30"
+                    }
+                },
+                {
+                    "title":"Innovation is out. Invention is in",
+                    "location":"Main Stage",
+                    "speaker":"David Shing / AOL",
+                    "time":{
+                        "start_time":"12:40",
+                        "end_time":"13:20"
+                    }
+                },
+                {
+                    "title":"Recap Day 2",
+                    "location":"Main Stage",
+                    "speaker":"Simone Skoog / GroupM",
+                    "time":{
+                        "start_time":"13:20",
+                        "end_time":"13:30"
                     }
                 }
             ]
