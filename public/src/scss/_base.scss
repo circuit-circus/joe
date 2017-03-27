@@ -1,16 +1,17 @@
 $normalfont: 'Roboto Mono', monospace;
+$arrowsize: 8px;
 
-::selection {
-    background: #000;
-    color: #fff;
+* {
+    box-sizing: border-box;
 }
 
-::-moz-selection {
+html {
     background: #000;
-    color: #fff;
+    font-size: 22px;
 }
 
-::-webkit-selection {
-    background: #000;
+body {
     color: #fff;
+    margin: 0;
+    padding: 0;
 }
