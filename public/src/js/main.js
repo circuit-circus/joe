@@ -468,24 +468,30 @@ function getIcebreaker(callback) {
                 ];
             }
 
-
             /* PROGRAMME */
             if(reactToElements[0] === 'programme' || reactToElements[1] === 'programme') {
                 var rightNow = moment();
-                var thisEvent = programme_data[Math.floor(Math.random()*programme_data.length)];
-                if(thisEvent.speaker !== undefined) {
-                    thisEvent.speaker = parseEventSpeaker(thisEvent.speaker);
-                }
 
-                var thisEventMoment = parseTime(thisEvent.time.start_time);
-
+                var thisEvent = null;
                 var programme_greetings = [''];
+
+                programme_data.forEach(function(elem) {
+                    var program_elem_start = parseTime(elem.time.start_time);
+                    var program_elem_before_start = program_elem_start.clone();
+                    program_elem_before_start.subtract(15, 'minutes');
+
+                    if(rightNow.isBetween(program_elem_before_start, program_elem_start)) {
+                        thisEvent = elem;
+
+                        if(thisEvent.speaker !== undefined) {
+                            thisEvent.speaker = parseEventSpeaker(thisEvent.speaker);
+                        }
+                    }
+                });
 
                 // console.log('PROGRAMME DATA:');
                 // console.log(programme_data);
-                // Is the randomly chosen event about to start?
-                if(rightNow.isBetween(thisEventMoment, thisEventMoment.subtract(15, 'minutes'))) {
-
+                if(thisEvent !== null) {
                     if(thisEvent.location !== 'Tech Garden') {
                         programme_greetings = [
                             'Oh! It looks like ' + thisEvent.speaker[0] + ' is about to start a talk on ' + thisEvent.location + '. ',
