@@ -192,11 +192,13 @@ app.post('/dispense', function(req, res, next) {
     var data = req.body;
     console.log('DISPENSING');
     console.log(data);
+
     var coffee_number = data.coffee_number;
-    var coffee_number_arduino = coffee_number.toString() + '\n';
+    var dispenser_number = data.dispenser_number;
+    var dispenser_number_arduino = dispenser_number.toString() + '\n';
 
     if(sp !== undefined && sp.isOpen()) {
-        sp.write(coffee_number_arduino, function(err) {
+        sp.write(dispenser_number_arduino, function(err) {
             if(err) {
                 console.log('Could not send dispenser signal');
                 console.log('Error: ' + err);
