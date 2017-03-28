@@ -880,7 +880,7 @@ function finishJoe(chosenDrink) {
     var joeFinishStatements = [
         'Great! Here\'s your ' + chosenDrink.name,
         'Alright! Your ' + chosenDrink.name + ' should be ready to grab. Enjoy!',
-        'Neat! I\'ve dispensed your' + chosenDrink.name + '. Bon appetit!'
+        'Neat! I\'ve dispensed your ' + chosenDrink.name + '. Bon appetit!'
     ];
     var joeFinishStatement = joeFinishStatements[Math.floor(Math.random()*joeFinishStatements.length)];
     var joeDelay = 7500;
