@@ -120,7 +120,6 @@ app.post('/drinks', function(req, res, next) {
     var data = req.body;
 
     var drinks = db.get().collection('coffee');
-
     drinks.find(data).toArray(function(err, result) {
         if(err) {
             console.log('Could not find coffee in DB');

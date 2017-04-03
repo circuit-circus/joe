@@ -335,8 +335,12 @@ function getIcebreaker(callback) {
 
             /* TIME */
             var currentTime = date.getHours();
+
+            currentTime = 8;
+            reactToElements[0] = 'time';
+
              // Find the right time of day
-            if(currentTime >= 6 && currentTime < 11) {
+            if(currentTime < 11) {
                 welcome_greetings = [
                     'Goodmorning [VISITOR]!',
                     'Hi [VISITOR], hope you\'re having a great morning!'
@@ -356,6 +360,13 @@ function getIcebreaker(callback) {
                     'Hi [VISITOR]! So nice to see you.',
                     'Welcome [VISITOR]!'
                 ];
+                if(reactToElements[0] === 'time') {
+                    icebreaker_choices.strength = {$in: [1]};
+                    drink_greetings = [
+                        'What do you say to a smooth cup of [DRINK]?',
+                        'It\'s the middle of the day, which calls for a loving cup of [DRINK]. What do you say?'
+                    ];
+                }
 
             } else if (currentTime >= 14 && currentTime < 18) {
                 welcome_greetings = [
@@ -373,7 +384,7 @@ function getIcebreaker(callback) {
                     ];
                 }
 
-            } else if (currentTime >= 18 && currentTime < 23) {
+            } else if (currentTime >= 18) {
                 welcome_greetings = [
                     'Goodevening [VISITOR]!',
                     'Goodevening [VISITOR], hope you\'re doing fine this lovely evening.'
@@ -392,8 +403,9 @@ function getIcebreaker(callback) {
 
 
             /* WEATHER */
-            // console.log('WEAHTER');
+            // console.log('WEATHER');
             // console.log(weather_data);
+
 
             if(reactToElements[0] === 'weather' || reactToElements[1] === 'weather') {
                 console.log(chosen_weather_element);
@@ -403,7 +415,7 @@ function getIcebreaker(callback) {
                         'Man, those clouds just won\'t quit today!'
                     ];
 
-                    if(reactToElements[ 0] === 'weather') {
+                    if(reactToElements[0] === 'weather') {
                         icebreaker_choices.strength = {$in: [1]};
                         drink_greetings = [
                             'I think cloudiness calls for a nice cup of [DRINK]!'
@@ -415,6 +427,12 @@ function getIcebreaker(callback) {
                         'It sure is foggy today. You can barely see a thing!',
                         'I heard that coffee tastes better when it\'s foggy, so today must be a great coffee day, huh?'
                     ];
+                    if(reactToElements[0] === 'weather') {
+                        icebreaker_choices.milk_froth = {$in: [2]};
+                        drink_greetings = [
+                            'How about a cup of [DRINK] to match the misty outside?'
+                        ];
+                    }
                 }
                 else if(chosen_weather_element === 'rainy') {
                     weather_greetings = [
@@ -424,8 +442,7 @@ function getIcebreaker(callback) {
                     if(reactToElements[0] === 'weather') {
                         icebreaker_choices.milk = {$in: [1]};
                         drink_greetings = [
-                            'I think milky drinks goes great with rain. How about a cup of [DRINK]?',
-                            'Rain = milk, yes? Would you like a delicious [DRINK]?'
+                            'I think milky drinks goes great with rain. How about a cup of [DRINK]?'
                         ];
                     }
                 }
@@ -529,7 +546,7 @@ function getIcebreaker(callback) {
 
             // If there's only one option left, that's the coffee
             getAvailableDrinks(icebreaker_choices, function(availableDrinks) {
-                var suggested_drink = availableDrinks[0];
+                var suggested_drink = availableDrinks[Math.floor(Math.random()*availableDrinks.length)];
                 // console.log('SUGGESTED');
                 // console.log(suggested_drink);
 
