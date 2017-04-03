@@ -562,21 +562,419 @@
         {
             "wednesday" : [
                 {
-                    "title": "Coffee & Croissant / TechGarden opens",
-                    "location": "Tech Garden",
-                    "time": {
-                        "start_time": "08:00",
-                        "end_time": "08:45"
+                    "title":"Coffee & Croissant / TechGarden opens",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"07:45",
+                        "end_time":"08:15"
+                    }
+                },
+                {
+                    "title":"Welcome",
+                    "location":"Main Stage",
+                    "speaker":"Jonas Hemmingsen / GroupM",
+                    "time":{
+                        "start_time":"08:15",
+                        "end_time":"08:20"
+                    }
+                },
+                {
+                    "title":"Cyber Arms Race",
+                    "location":"Main Stage",
+                    "speaker":"Mikko Hyppönen / F-Secure",
+                    "time":{
+                        "start_time":"08:20",
+                        "end_time":"09:00"
+                    }
+                },
+                {
+                    "title":"Reinventing Entertainment for a Global Community",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Jenny Hermanson / Spotify",
+                    "time":{
+                        "start_time":"09:10",
+                        "end_time":"09:40"
+                    }
+                },
+                {
+                    "title":"Breakout Session by Airmagine",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Airmagine",
+                    "time":{
+                        "start_time":"09:10",
+                        "end_time":"09:40"
+                    }
+                },
+                {
+                    "title":"Magnanimous Machines",
+                    "location":"Main Stage",
+                    "speaker":"Nell Watson / Singularity University",
+                    "time":{
+                        "start_time":"09:50",
+                        "end_time":"10:30"
+                    }
+                },
+                {
+                    "title":"From Influencer to Succesful Business Owner",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Christiane Schaumburg-Müller / ChriChri",
+                    "time":{
+                        "start_time":"10:40",
+                        "end_time":"11:10"
+                    }
+                },
+                {
+                    "title":"Data Driven Marketing: the Programmable Future is Here",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Stefan Kehl / AppNexus",
+                    "time":{
+                        "start_time":"10:40",
+                        "end_time":"11:10"
+                    }
+                },
+                {
+                    "title":"Multisensory Experience Lab at Aalborg University Copenhagen",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Stefania Serafin / AAU",
+                    "time":{
+                        "start_time":"10:40",
+                        "end_time":"11:10"
+                    }
+                },
+                {
+                    "title":"Silos vs. Ecosystems",
+                    "location":"Main Stage",
+                    "speaker":"Jacob Lachmann / AudienceProject",
+                    "time":{
+                        "start_time":"11:20",
+                        "end_time":"12:00"
+                    }
+                },
+                {
+                    "title":"Audience – First Best Practices for Advertisers",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Ashu Mathura / Adform",
+                    "time":{
+                        "start_time":"12:10",
+                        "end_time":"12:40"
+                    }
+                },
+                {
+                    "title":"Hvad betyder de nye persondataregler for din forretning?",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Thomas Munk Rasmussen / Bech-Bruun",
+                    "time":{
+                        "start_time":"12:10",
+                        "end_time":"12:40"
+                    }
+                },
+                {
+                    "title":"The Future in Motion Capture",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Rokoko",
+                    "time":{
+                        "start_time":"12:10",
+                        "end_time":"12:40"
+                    }
+                },
+                {
+                    "title":"Lunch Break",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"12:40",
+                        "end_time":"13:20"
+                    }
+                },
+                {
+                    "title":"Social Trends 2017",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Rasmus Fisker / MediaCom",
+                    "time":{
+                        "start_time":"12:45",
+                        "end_time":"13:15"
+                    }
+                },
+                {
+                    "title":"Måling af Marketing Performance i en Multichannel Verden",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Kristian Toft / Data Intelligence",
+                    "time":{
+                        "start_time":"12:45",
+                        "end_time":"13:15"
+                    }
+                },
+                {
+                    "title":"Print as the Next Frontier",
+                    "location":"Main Stage",
+                    "speaker":"Dr. Kate Stone / Novalia",
+                    "time":{
+                        "start_time":"13:20",
+                        "end_time":"14:00"
+                    }
+                },
+                {
+                    "title":"Hackathon – Hack an Adshel",
+                    "location":"Main Stage",
+                    "time":{
+                        "start_time":"14:00",
+                        "end_time":"14:20"
+                    }
+                },
+                {
+                    "title":"Maximize the Effect of Programmatic Through Data & Creative",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Birgitte Jöhncke / Google",
+                    "time":{
+                        "start_time":"14:30",
+                        "end_time":"15:00"
+                    }
+                },
+                {
+                    "title":"Six Steps to Future-Proof your Marketing and Customer Experience",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Antony Gibson / Tealium",
+                    "time":{
+                        "start_time":"14:30",
+                        "end_time":"15:00"
+                    }
+                },
+                {
+                    "title":"The Connected Body",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Hannes Sjoblad, Jowan Österlund / BioNyfiken",
+                    "time":{
+                        "start_time":"14:30",
+                        "end_time":"15:00"
+                    }
+                },
+                {
+                    "title":"The Cyborg Revolution",
+                    "location":"Main Stage",
+                    "speaker":"Aral Balkan / Ind.ie",
+                    "time":{
+                        "start_time":"15:10",
+                        "end_time":"15:50"
+                    }
+                },
+                {
+                    "title":"Winning in Asia – How to Approach Asian Markets from the Nordics",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Jakob Stigler / AOL",
+                    "time":{
+                        "start_time":"16:00",
+                        "end_time":"16:30"
+                    }
+                },
+                {
+                    "title":"Persona Marketing: are you a power woman or a young male testosterone?",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Peter Ottesen / m/SIX",
+                    "time":{
+                        "start_time":"16:00",
+                        "end_time":"16:30"
+                    }
+                },
+                {
+                    "title":"Launching Consumer Hardware Like a Start-up",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Mats Horn / Tinitell",
+                    "time":{
+                        "start_time":"16:00",
+                        "end_time":"16:30"
+                    }
+                },
+                {
+                    "title":"VR, AR and the Intersection of Print and Digital",
+                    "location":"Main Stage",
+                    "speaker":"Molly DeWolf Swenson / RYOT",
+                    "time":{
+                        "start_time":"16:40",
+                        "end_time":"17:20"
+                    }
+                },
+                {
+                    "title":"Recap Day 1",
+                    "location":"Main Stage",
+                    "speaker":"Jonas Hemmingsen / GroupM",
+                    "time":{
+                        "start_time":"17:10",
+                        "end_time":"17:15"
+                    }
+                },
+                {
+                    "title":"Come join m/SIX for a live session of chiptune 4-bit music",
+                    "location":"m/SIX booth",
+                    "speaker":"Chiptune",
+                    "time":{
+                        "start_time":"17:15",
+                        "end_time":"18:00"
+                    }
+                },
+                {
+                    "title":"Cool Down",
+                    "time":{
+                        "start_time":"17:15",
+                        "end_time":"18:30"
                     }
                 }
             ],
             "thursday" : [
                 {
-                    "title": "Coffee & Croissants/Tech garden opens",
-                    "location": "Tech Garden",
-                    "time": {
-                        "start_time": "08:00",
-                        "end_time": "08:45"
+                    "title":"Coffee & Croissant / TechGarden Opens",
+                    "location":"Tech Garden",
+                    "time":{
+                        "start_time":"07:45",
+                        "end_time":"08:35"
+                    }
+                },
+                {
+                    "title":"Welcome",
+                    "location":"Main Stage",
+                    "speaker":"Jonas Hemmingsen / GroupM",
+                    "time":{
+                        "start_time":"08:35",
+                        "end_time":"08:45"
+                    }
+                },
+                {
+                    "title":"Man vs Machine: the journey from fear to love for the world’s most disruptive technologies",
+                    "location":"Main Stage",
+                    "speaker":"Laurence Kemball-Cook / Pavegen",
+                    "time":{
+                        "start_time":"08:45",
+                        "end_time":"09:25"
+                    }
+                },
+                {
+                    "title":"Innovation Stories From The Bluemix Garage",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Holly Cummins / IBM",
+                    "time":{
+                        "start_time":"09:35",
+                        "end_time":"10:05"
+                    }
+                },
+                {
+                    "title":"Will Today’s iPhone be Tomorrow’s Media Planner?",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Richard Lloyd / Maxus Global",
+                    "time":{
+                        "start_time":"09:35",
+                        "end_time":"10:05"
+                    }
+                },
+                {
+                    "title":"How to MATE passion with Crowdfunding – and Raise Millions",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Christan Adel Michael / MATE.bike, Julie Kronstrøm / MATE.bike",
+                    "time":{
+                        "start_time":"09:35",
+                        "end_time":"10:05"
+                    }
+                },
+                {
+                    "title":"Media on the Blockchain",
+                    "location":"Main Stage",
+                    "speaker":"Nic Hodges / News Corp",
+                    "time":{
+                        "start_time":"10:15",
+                        "end_time":"10:55"
+                    }
+                },
+                {
+                    "title":"Marketing in the Age of Automation",
+                    "location":"Main Stage",
+                    "speaker":"Huseyin Savas / Google, Kate Adams / Google",
+                    "time":{
+                        "start_time":"11:00",
+                        "end_time":"11:40"
+                    }
+                },
+                {
+                    "title":"The future of Digital Out Of Home",
+                    "location":"Stage 1 (T1)",
+                    "speaker":"Alexis Logothetis / Clear Channel",
+                    "time":{
+                        "start_time":"11:55",
+                        "end_time":"12:25"
+                    }
+                },
+                {
+                    "title":"After Ad. Hvad gør vi, når veldokumenteret reklamevisdom mister effekt?",
+                    "location":"Stage 2 (T1)",
+                    "speaker":"Mindshare",
+                    "time":{
+                        "start_time":"11:55",
+                        "end_time":"12:25"
+                    }
+                },
+                {
+                    "title":"From Digital to Artificial Intelligence. Orchestrating omnichannel experiences",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Kresten Bach Søndergaard / GroupM",
+                    "time":{
+                        "start_time":"11:55",
+                        "end_time":"12:25"
+                    }
+                },
+                {
+                    "title":"Music by BLONDAGE",
+                    "location":"Main Stage",
+                    "time":{
+                        "start_time":"12:35",
+                        "end_time":"12:50"
+                    }
+                },
+                {
+                    "title":"Machine Learning as Design Tool",
+                    "location":"Main Stage",
+                    "speaker":"Rebecca Fiebrink",
+                    "time":{
+                        "start_time":"12:50",
+                        "end_time":"13:30"
+                    }
+                },
+                {
+                    "title":"Recap Day 2",
+                    "location":"Main Stage",
+                    "speaker":"Jonas Hemmingsen / GroupM",
+                    "time":{
+                        "start_time":"13:35",
+                        "end_time":"13:50"
+                    }
+                },
+                {
+                    "title":"Lunch",
+                    "time":{
+                        "start_time":"13:50",
+                        "end_time":"14:00"
+                    }
+                },
+                {
+                    "title":"Breakout by Chris Dancy",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Chris Dancy / Human Cyborg",
+                    "time":{
+                        "start_time":"14:00",
+                        "end_time":"14:30"
+                    }
+                },
+                {
+                    "title":"Mixed Reality and Virtual Reality",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Jo Jørgen Stordal / Point Media",
+                    "time":{
+                        "start_time":"14:45",
+                        "end_time":"15:15"
+                    }
+                },
+                {
+                    "title":"Introducing Video Marketing Automation",
+                    "location":"Stage 3 (T2)",
+                    "speaker":"Christian Lund / TwentyThree, Thomas Madsen-Mygdal / TwentyThree",
+                    "time":{
+                        "start_time":"15:30",
+                        "end_time":"16:00"
                     }
                 }
             ]
