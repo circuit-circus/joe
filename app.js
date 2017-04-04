@@ -4,6 +4,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var request = require('request');
 const nodemailer = require('nodemailer');
 var mail_credentials = require('./mail_credentials.json');
 
@@ -17,6 +18,8 @@ var fs = require('fs');
 
 // Number of coffee left in dispensers
 var coffee_inventory = [];
+
+var latest_guest = {};
 
 /* SETUP */
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
@@ -157,7 +160,8 @@ app.post('/rfid/recieve', function(req, res, next) {
         }
 
         guest_result = guest_result[0]._guest;
-        console.log(guest_result);
+
+        latest_guest = guest_result;
 
         var guest_first_name = guest_result.name.substr(0, guest_result.name.indexOf(' '));
         var guest_last_name = guest_result.name.substr(guest_result.name.indexOf(' ') + 1);
@@ -188,12 +192,12 @@ app.post('/rfid/recieve', function(req, res, next) {
 });
 
 app.post('/dispense', function(req, res, next) {
-    var data = req.body;
+    var coffee_data = req.body;
     console.log('DISPENSING');
-    console.log(data);
+    console.log(coffee_data);
 
-    var coffee_number = data.coffee_number;
-    var dispenser_number = data.dispenser_number;
+    var coffee_number = coffee_data.coffee_number;
+    var dispenser_number = coffee_data.dispenser_number;
 
     // If it's a Skånerost, we might want to use the other dispenser
     if(coffee_number === 0 && coffee_inventory[0].inventory_status < 10 ) {
@@ -268,6 +272,33 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
+    });
+
+    // Send info to groupM
+    var options = { 
+        method: 'POST',
+        url: 'http://staging-rfid-1875619193.eu-central-1.elb.amazonaws.com/api/things',
+        headers: {
+            'postman-token': '97e4a82f-0f8b-f813-3ab7-ba6acca5e2f5',
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        form: { 
+            type: 'coffee',
+            _guest: data.visitor_id,
+            name: data.chosen_drink_name
+        }
+    };
+
+    request(options, function (error, response, body) {
+        if(error) {
+            console.log('Could not send coffee info to GroupM');
+            console.log('Error: ' + err);
+            return;
+        }
+        
+        console.log('RES FROM GROUPM REQUEST:');
+        console.log(body);
     });
 });
 
