@@ -151,7 +151,7 @@ app.post('/rfid/recieve', function(req, res, next) {
         }
 
         // Could not find guest
-        if(guest_result.length <= 0) {
+        if(guest_result == undefined || guest_result.length <= 0) {
             io.sockets.emit('couldNotFindGuest', guest_result);
             return;
         }
@@ -194,6 +194,18 @@ app.post('/dispense', function(req, res, next) {
 
     var coffee_number = data.coffee_number;
     var dispenser_number = data.dispenser_number;
+
+    // If it's a Skånerost, we might want to use the other dispenser
+    if(coffee_number === 0 && coffee_inventory[0].inventory_status < 10 ) {
+        console.log('USING DISPENSER 9 INSTEAD');
+        dispenser_number = 9;
+    }
+    // Or if Espresso
+    if(coffee_number === 4 && coffee_inventory[4].inventory_status < 10 ) {
+        console.log('USING DISPENSER 10 INSTEAD');
+        dispenser_number = 10;
+    }
+
     var dispenser_number_arduino = dispenser_number.toString() + '\n';
 
     if(sp !== undefined && sp.isOpen()) {
@@ -291,9 +303,18 @@ app.post('/weather', function(req, res, next) {
 });
 
 app.get('/reset_inventory', function(req, res, next) {
+
+    // Update local var
     coffee_inventory.forEach(function(elem) {
-        elem.inventory_status = 9;
+        if(elem.coffee_number === 0 || elem.coffee_number === 4) {
+            elem.inventory_status = 18;
+        }
+        else {
+            elem.inventory_status = 9;
+        }
     });
+
+    // Update in DB
     var drinks = db.get().collection('coffee');
     drinks.updateMany({}, {$set: {'inventory_status' : 9}}, function(err, result) {
         if(err) {
@@ -301,8 +322,17 @@ app.get('/reset_inventory', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
-        res.send('Coffee amount in dispensers has been reset');
     });
+
+    // Update Skånerost and Espresso to 18
+    drinks.updateMany({'coffee_number' : {$in : [0, 4]}}, {$set: {'inventory_status' : 18}}, function(err, result) {
+        if(err) {
+            console.log('Could not update number of capsules left in dispenser');
+            console.log('Error: ' + err);
+            return;
+        }
+    });
+    res.send('Coffee amount in dispensers has been reset');
 });
 
 app.get('/inventory_status', function(req, res, next) {
@@ -314,7 +344,17 @@ app.get('/inventory_status', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
-        res.send(result);
+
+        var inventory = [];
+
+        result.forEach(function(elem) {
+            var inventory_elem = {
+                'Name' : elem.name,
+                'Status' : elem.inventory_status
+            }
+            inventory.push(inventory_elem);
+        });
+        res.send(inventory);
     });
 });
 
