@@ -923,7 +923,8 @@ function finishJoe(chosenDrink) {
         if(current_visitor !== null) {
             var updateVisitorLastDrinkData = {
                 visitor_id : current_visitor._id,
-                chosen_drink_number : chosenDrink.coffee_number
+                chosen_drink_number : chosenDrink.coffee_number,
+                chosen_drink_name : chosenDrink.name
             }
 
             sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
