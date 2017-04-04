@@ -152,7 +152,7 @@ app.post('/rfid/recieve', function(req, res, next) {
         }
 
         // Could not find guest
-        if(guest_result.length <= 0) {
+        if(guest_result == undefined || guest_result.length <= 0) {
             io.sockets.emit('couldNotFindGuest', guest_result);
             return;
         }
@@ -345,7 +345,17 @@ app.get('/inventory_status', function(req, res, next) {
             console.log('Error: ' + err);
             return;
         }
-        res.send(result);
+
+        var inventory = [];
+
+        result.forEach(function(elem) {
+            var inventory_elem = {
+                'Name' : elem.name,
+                'Status' : elem.inventory_status
+            }
+            inventory.push(inventory_elem);
+        });
+        res.send(inventory);
     });
 });
 
