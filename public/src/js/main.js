@@ -213,6 +213,7 @@ function startWaiting() {
                 if(!iceBreakerStarted) {
                     ga('send', 'event', 'RFID Scan', 'Fail');
                     console.log('Found no RFID');
+                    current_visitor = null;
                     startIcebreaker();
                 }
             }, 2000);
@@ -234,6 +235,7 @@ function startWaiting() {
         if(!isServing && isListeningForVisitor) {
             console.log('Found RFID but no visitor');
             ga('send', 'event', 'RFID Scan', 'Success, but not in db');
+            current_visitor = null;
             startIcebreaker();
         }
     });
@@ -293,8 +295,9 @@ function getIcebreaker(callback) {
     // Get weather info
     var location_data = getLocation();
     getWithTheProgramme(location_data, function(programme_data) {
+        console.log('GOT PROGRAMME');
         getWeatherInfo(location_data, function(weather_data) {
-
+            console.log('GOT WEATHER');
             var welcome_greetings = [
                 'Hi there [VISITOR]!',
                 'Hello [VISITOR]!'
@@ -335,9 +338,6 @@ function getIcebreaker(callback) {
 
             /* TIME */
             var currentTime = date.getHours();
-
-            currentTime = 8;
-            reactToElements[0] = 'time';
 
              // Find the right time of day
             if(currentTime < 11) {
@@ -928,7 +928,6 @@ function finishJoe(chosenDrink) {
             }
 
             sendToPath('post', '/update_visitor_last_drink', updateVisitorLastDrinkData, function(error, response) {
-
             });
         }
 
