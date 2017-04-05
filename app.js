@@ -7,19 +7,16 @@ var bodyParser = require('body-parser');
 var request = require('request');
 const nodemailer = require('nodemailer');
 var mail_credentials = require('./mail_credentials.json');
-
-var drinks;
-var db = require('./db')
 var ObjectId = require('mongodb').ObjectID;
-
+var db = require('./db')
 var yrno = require('yr.no-forecast');
-
 var fs = require('fs');
 
-// Number of coffee left in dispensers
-var coffee_inventory = [];
+var drinks;
 
-var latest_guest = {};
+var coffee_inventory = []; // Number of coffee left in dispensers
+var auth_token;
+
 
 /* SETUP */
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
@@ -42,6 +39,11 @@ db.connect(url, function(err) {
 
     http.listen(5000, function() {
         console.log('listening on *:5000');
+    });
+
+    getAuthToken(function(){
+        console.log('GOT TOKEN:')
+        console.log(auth_token);
     });
 
     // Get inventory status
@@ -161,8 +163,6 @@ app.post('/rfid/recieve', function(req, res, next) {
 
         guest_result = guest_result[0]._guest;
 
-        latest_guest = guest_result;
-
         var guest_first_name = guest_result.name.substr(0, guest_result.name.indexOf(' '));
         var guest_last_name = guest_result.name.substr(guest_result.name.indexOf(' ') + 1);
 
@@ -252,13 +252,20 @@ app.post('/dispense', function(req, res, next) {
 app.post('/update_visitor_last_drink', function(req, res, next) {
     var data = req.body;
 
+    console.log('DATA:');
+    console.log(data);
+
+    var guest_id = data.visitor_id;
+    var coffee_name = data.chosen_drink_name;
+    var coffee_number = data.chosen_drink_number;
+
     var guest_query = {
-        'guest_id' : data.visitor_id
+        'guest_id' : guest_id
     };
 
     var update_query = {
-        'last_drink' : data.chosen_drink_number,
-        'guest_id' : data.visitor_id
+        'last_drink' : coffee_number,
+        'guest_id' : guest_id
     };
 
     var update_settings = {
@@ -274,32 +281,10 @@ app.post('/update_visitor_last_drink', function(req, res, next) {
         }
     });
 
-    // Send info to groupM
-    var options = { 
-        method: 'POST',
-        url: 'http://staging-rfid-1875619193.eu-central-1.elb.amazonaws.com/api/things',
-        headers: {
-            'postman-token': '97e4a82f-0f8b-f813-3ab7-ba6acca5e2f5',
-            'cache-control': 'no-cache',
-            'content-type': 'application/x-www-form-urlencoded'
-        },
-        form: { 
-            type: 'coffee',
-            _guest: data.visitor_id,
-            name: data.chosen_drink_name
-        }
-    };
+    sendCoffeeInfoToGroupM(guest_id, coffee_name);
 
-    request(options, function (error, response, body) {
-        if(error) {
-            console.log('Could not send coffee info to GroupM');
-            console.log('Error: ' + err);
-            return;
-        }
-        
-        console.log('RES FROM GROUPM REQUEST:');
-        console.log(body);
-    });
+    res.send('ok');
+
 });
 
 app.get('/programme', function(req, res, next) {
@@ -388,6 +373,75 @@ app.get('/inventory_status', function(req, res, next) {
         res.send(inventory);
     });
 });
+
+function getAuthToken(callback) {
+
+    // Send info to groupM
+    var options = {
+        method: 'POST',
+        url: 'http://rfid.nextm.io/auth/local',
+        headers: {
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        form: {
+            email: 'nhoejholdt@gmail.com',
+            password: '1@u1Ktsvjt'
+        }
+    };
+
+    request(options, function (error, response, body) {
+        if(error) {
+            console.log('Could not get token from groupM');
+            console.log('Error: ' + err);
+            return;
+        }
+
+        body = JSON.parse(body);
+        auth_token = body.token;
+
+        callback();
+    });
+}
+
+function sendCoffeeInfoToGroupM(guest_id, coffee_name) {
+
+        console.log('TRYING TO SEND TO GROUP M. WITH TOKEN');
+        console.log(auth_token);
+
+        // Send info to groupM
+        var options = {
+            method: 'POST',
+            url: 'http://staging-rfid-1875619193.eu-central-1.elb.amazonaws.com/api/things',
+            headers: {
+                'Authorization': 'Bearer ' + auth_token,
+                'cache-control': 'no-cache',
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            form: {
+                type: 'coffee',
+                _guest: guest_id,
+                name: coffee_name
+            }
+        };
+
+        request(options, function (error, response, body) {
+            if(error) {
+                console.log('Could not send coffee info to GroupM');
+                console.log('Error: ' + err);
+                return;
+            }
+
+            if(response.statusCode === 401) {
+                console.log('UNAUTH, GETTING NEW TOKEN');
+                getAuthToken(function() {
+                    sendCoffeeInfoToGroupM(guest_id, coffee_name);
+                });
+            }
+
+            return;
+        });
+    }
 
 function sendWarningEmail(coffee_elem) {
     // setup email data with unicode symbols
